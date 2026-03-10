@@ -5,8 +5,8 @@
       <div class="header-content">
         <div class="user-info" @click="toggleUserMenu">
           <div class="avatar">
-            <img 
-              :src="userAvatar" 
+            <img
+              :src="userAvatar"
               @error="$event.target.src = 'https://cdn.quasar.dev/img/avatar6.jpg'"
             >
           </div>
@@ -16,7 +16,7 @@
           </div>
           <span class="material-icons dropdown-icon">arrow_drop_down</span>
         </div>
-        
+
         <!-- Menu dropdown do usuário -->
         <div v-if="userMenuOpen" class="user-dropdown">
           <div class="dropdown-header">
@@ -28,11 +28,11 @@
           </div>
           <div class="dropdown-divider"></div>
           <button class="dropdown-item" @click="irParaPerfil">
-            <span class="material-icons">person</span>
+            <span class="material-icons" style="color: #667eea">person</span>
             Meu Perfil
           </button>
           <button class="dropdown-item" @click="irParaConfiguracoes">
-            <span class="material-icons">settings</span>
+            <span class="material-icons" style="color: #764ba2">settings</span>
             Configurações
           </button>
           <div class="dropdown-divider"></div>
@@ -58,7 +58,7 @@
         :class="{ active: tab === item.id }"
         @click="tab = item.id"
       >
-        <span class="material-icons">{{ item.icon }}</span>
+        <span class="material-icons" :style="tab === item.id ? 'background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent;' : ''">{{ item.icon }}</span>
         <span class="label">{{ item.label }}</span>
         <span v-if="item.badge > 0" class="nav-badge">{{ item.badge }}</span>
       </button>
@@ -66,7 +66,7 @@
 
     <!-- Loading State -->
     <div v-if="loading" class="loading-container">
-      <div class="spinner"></div>
+      <div class="spinner" style="border-top-color: #667eea"></div>
       <p>Carregando...</p>
     </div>
 
@@ -74,7 +74,7 @@
     <div v-else-if="error" class="error-container">
       <span class="material-icons error-icon">error_outline</span>
       <p>{{ error }}</p>
-      <button class="retry-btn" @click="carregarDados">Tentar novamente</button>
+      <button class="retry-btn" @click="carregarDados" style="background: linear-gradient(135deg, #667eea, #764ba2)">Tentar novamente</button>
     </div>
 
     <!-- Conteúdo -->
@@ -84,28 +84,28 @@
         <!-- Stats rápidos -->
         <div class="stats-row">
           <div class="stat-box" @click="tab = 'usuarios'">
-            <div class="stat-value">{{ stats.usuarios?.total || 0 }}</div>
+            <div class="stat-value" style="color: #667eea">{{ stats.usuarios?.total || 0 }}</div>
             <div class="stat-label">Usuários</div>
             <div class="stat-trend positive" v-if="stats.usuarios?.novos_hoje > 0">
               +{{ stats.usuarios.novos_hoje }} hoje
             </div>
           </div>
           <div class="stat-box" @click="tab = 'explicadores'">
-            <div class="stat-value">{{ stats.explicadores?.total || 0 }}</div>
+            <div class="stat-value" style="color: #764ba2">{{ stats.explicadores?.total || 0 }}</div>
             <div class="stat-label">Explicadores</div>
             <div class="stat-trend" :class="stats.explicadores?.pendentes > 0 ? 'warning' : ''">
               {{ stats.explicadores?.pendentes || 0 }} pendentes
             </div>
           </div>
           <div class="stat-box" @click="tab = 'conteudos'">
-            <div class="stat-value">{{ stats.conteudos?.total || 0 }}</div>
+            <div class="stat-value" style="color: #667eea">{{ stats.conteudos?.total || 0 }}</div>
             <div class="stat-label">Conteúdos</div>
             <div class="stat-trend warning" v-if="stats.conteudos?.pendentes > 0">
               {{ stats.conteudos.pendentes }} pendentes
             </div>
           </div>
           <div class="stat-box" @click="tab = 'transacoes'">
-            <div class="stat-value">{{ formatarPreco(stats.financeiro?.receita_mes || 0) }}</div>
+            <div class="stat-value" style="color: #764ba2">{{ formatarPreco(stats.financeiro?.receita_mes || 0) }}</div>
             <div class="stat-label">Receita/mês</div>
           </div>
         </div>
@@ -114,7 +114,7 @@
         <div class="list-card">
           <div class="list-header">
             <h3>📋 Atividade Recente</h3>
-            <button class="view-all" @click="tab = 'usuarios'">Ver todos</button>
+            <button class="view-all" @click="tab = 'usuarios'" style="color: #667eea">Ver todos</button>
           </div>
           <div class="list-items">
             <div v-if="atividades.length === 0" class="empty-item">
@@ -137,7 +137,7 @@
         <div class="list-card">
           <div class="list-header">
             <h3>🏆 Top Explicadores</h3>
-            <button class="view-all" @click="tab = 'explicadores'">Ver todos</button>
+            <button class="view-all" @click="tab = 'explicadores'" style="color: #667eea">Ver todos</button>
           </div>
           <div class="list-items">
             <div v-if="topExplicadores.length === 0" class="empty-item">
@@ -153,7 +153,7 @@
               </div>
               <div class="item-stats">
                 <span class="stat-badge">{{ exp.sessoes || 0 }} sessões</span>
-                <span class="stat-badge highlight">{{ formatarPreco(exp.ganhos || 0) }}</span>
+                <span class="stat-badge highlight" style="color: #667eea; background: rgba(102, 126, 234, 0.1)">{{ formatarPreco(exp.ganhos || 0) }}</span>
               </div>
             </div>
           </div>
@@ -163,7 +163,7 @@
         <div class="list-card">
           <div class="list-header">
             <h3>👥 Últimos Usuários</h3>
-            <button class="view-all" @click="tab = 'usuarios'">Ver todos</button>
+            <button class="view-all" @click="tab = 'usuarios'" style="color: #667eea">Ver todos</button>
           </div>
           <div class="list-items">
             <div v-if="ultimosUsuarios.length === 0" class="empty-item">
@@ -188,14 +188,14 @@
         <div class="list-card">
           <div class="list-header">
             <h3>💰 Últimas Transações</h3>
-            <button class="view-all" @click="tab = 'transacoes'">Ver todos</button>
+            <button class="view-all" @click="tab = 'transacoes'" style="color: #667eea">Ver todos</button>
           </div>
           <div class="list-items">
             <div v-if="ultimasTransacoes.length === 0" class="empty-item">
               Nenhuma transação recente
             </div>
             <div v-for="trans in ultimasTransacoes" :key="trans.id" class="list-item">
-              <div class="item-icon" :class="trans.tipo?.toLowerCase()">3
+              <div class="item-icon" :class="trans.tipo?.toLowerCase()">
                 <span class="material-icons">{{ trans.tipo === 'Sessão' ? 'record_voice_over' : 'menu_book' }}</span>
               </div>
               <div class="item-info">
@@ -206,7 +206,7 @@
                 <div class="item-subtitle">{{ trans.estudante_nome || trans.estudante }} → {{ trans.explicador_nome || trans.explicador }}</div>
               </div>
               <div class="item-values">
-                <div class="main-value">{{ formatarPreco(trans.valor) }}</div>
+                <div class="main-value" style="color: #667eea">{{ formatarPreco(trans.valor) }}</div>
                 <div class="commission">+{{ formatarPreco(trans.comissao) }}</div>
               </div>
             </div>
@@ -217,7 +217,7 @@
         <div class="list-card">
           <div class="list-header">
             <h3>💬 Feedbacks</h3>
-            <button class="view-all" @click="carregarFeedbacks">Ver todos</button>
+            <button class="view-all" @click="carregarFeedbacks" style="color: #667eea">Ver todos</button>
           </div>
           <div class="list-items">
             <div v-if="feedbacks.length === 0" class="empty-item">
@@ -240,7 +240,7 @@
         </div>
 
         <!-- WhatsApp Channel -->
-        <div class="whatsapp-card">
+        <div class="whatsapp-card" style="background: linear-gradient(135deg, #667eea, #764ba2)">
           <div class="whatsapp-content">
             <div class="whatsapp-icon">
               <span class="material-icons">whatsapp</span>
@@ -250,18 +250,18 @@
               <p>Receba atualizações do sistema</p>
             </div>
           </div>
-          <a href="#" class="follow-btn" @click.prevent="seguirCanal">Seguir</a>
+          <a href="#" class="follow-btn" @click.prevent="seguirCanal" style="color: #667eea">Seguir</a>
         </div>
       </div>
 
       <!-- USUÁRIOS -->
       <div v-if="tab === 'usuarios'" class="tab-page">
         <div class="tab-header">
-          <h2>Usuários</h2>
+          <h2 style="color: #667eea">Usuários</h2>
           <div class="header-actions">
-            <input 
-              v-model="filtros.usuarios.busca" 
-              placeholder="Buscar..." 
+            <input
+              v-model="filtros.usuarios.busca"
+              placeholder="Buscar..."
               class="search-input"
               @input="filtrarUsuarios"
             >
@@ -301,14 +301,14 @@
               </div>
               <div v-if="user.tipo === 'explicador'" class="item-stats">
                 <div>{{ user.explicador?.sessoes_realizadas || 0 }} sessões</div>
-                <div class="highlight">{{ formatarPreco(user.explicador?.ganhos_mes || 0) }}/mês</div>
+                <div class="highlight" style="color: #667eea">{{ formatarPreco(user.explicador?.ganhos_mes || 0) }}/mês</div>
               </div>
               <div class="item-actions">
-                <button class="action-btn" @click="verUsuario(user)" title="Ver detalhes">👁️</button>
-                <button class="action-btn" @click="editarUsuario(user)" title="Editar">✏️</button>
-                <button 
-                  class="action-btn" 
-                  :class="user.status === 'Bloqueado' ? 'unlock' : 'lock'" 
+                <button class="action-btn" @click="verUsuario(user)" title="Ver detalhes" style="color: #667eea">👁️</button>
+                <button class="action-btn" @click="editarUsuario(user)" title="Editar" style="color: #764ba2">✏️</button>
+                <button
+                  class="action-btn"
+                  :class="user.status === 'Bloqueado' ? 'unlock' : 'lock'"
                   @click="toggleStatusUsuario(user)"
                   :title="user.status === 'Bloqueado' ? 'Desbloquear' : 'Bloquear'"
                 >
@@ -318,12 +318,13 @@
             </div>
           </div>
           <div v-if="paginas.usuarios.totalPages > 1" class="pagination">
-            <button 
-              v-for="page in paginas.usuarios.totalPages" 
+            <button
+              v-for="page in paginas.usuarios.totalPages"
               :key="page"
               class="page-btn"
               :class="{ active: paginas.usuarios.currentPage === page }"
               @click="carregarUsuarios(page)"
+              :style="paginas.usuarios.currentPage === page ? 'background: linear-gradient(135deg, #667eea, #764ba2); border: none;' : ''"
             >
               {{ page }}
             </button>
@@ -334,11 +335,11 @@
       <!-- EXPLICADORES -->
       <div v-if="tab === 'explicadores'" class="tab-page">
         <div class="tab-header">
-          <h2>Explicadores</h2>
+          <h2 style="color: #764ba2">Explicadores</h2>
           <div class="header-actions">
-            <input 
-              v-model="filtros.explicadores.busca" 
-              placeholder="Buscar..." 
+            <input
+              v-model="filtros.explicadores.busca"
+              placeholder="Buscar..."
               class="search-input"
               @input="filtrarExplicadores"
             >
@@ -365,30 +366,31 @@
                 <div class="item-title">{{ exp.user?.nome }}</div>
                 <div class="item-subtitle">{{ exp.user?.email }}</div>
                 <div class="rating">
-                  <span v-for="n in 5" :key="n">{{ n <= (exp.avaliacao || 0) ? '★' : '☆' }}</span>
+                  <span v-for="n in 5" :key="n" :style="{ color: n <= (exp.avaliacao || 0) ? '#667eea' : '#ddd' }">{{ n <= (exp.avaliacao || 0) ? '★' : '☆' }}</span>
                   <span>({{ exp.total_avaliacoes || 0 }})</span>
                 </div>
                 <div class="item-tags">
-                  <span v-for="mat in exp.materias || []" :key="mat" class="tag secondary">{{ mat }}</span>
+                  <span v-for="mat in exp.materias || []" :key="mat" class="tag secondary" style="background: rgba(118, 75, 162, 0.1); color: #764ba2">{{ mat }}</span>
                 </div>
               </div>
               <div class="item-stats">
                 <div>{{ exp.sessoes_realizadas || 0 }} sessões</div>
-                <div class="highlight">{{ formatarPreco(exp.ganhos_mes || 0) }}/mês</div>
+                <div class="highlight" style="color: #764ba2">{{ formatarPreco(exp.ganhos_mes || 0) }}/mês</div>
               </div>
               <div class="item-actions">
-                <button v-if="exp.status === 'Pendente'" class="action-btn success" @click="aprovarExplicador(exp)" title="Aprovar">✅</button>
-                <button class="action-btn" @click="verExplicador(exp)" title="Ver detalhes">👁️</button>
+                <button v-if="exp.status === 'Pendente'" class="action-btn success" @click="aprovarExplicador(exp)" title="Aprovar" style="color: #667eea">✅</button>
+                <button class="action-btn" @click="verExplicador(exp)" title="Ver detalhes" style="color: #764ba2">👁️</button>
               </div>
             </div>
           </div>
           <div v-if="paginas.explicadores.totalPages > 1" class="pagination">
-            <button 
-              v-for="page in paginas.explicadores.totalPages" 
+            <button
+              v-for="page in paginas.explicadores.totalPages"
               :key="page"
               class="page-btn"
               :class="{ active: paginas.explicadores.currentPage === page }"
               @click="carregarExplicadores(page)"
+              :style="paginas.explicadores.currentPage === page ? 'background: linear-gradient(135deg, #667eea, #764ba2); border: none;' : ''"
             >
               {{ page }}
             </button>
@@ -399,11 +401,11 @@
       <!-- CONTEÚDOS -->
       <div v-if="tab === 'conteudos'" class="tab-page">
         <div class="tab-header">
-          <h2>Conteúdos</h2>
+          <h2 style="color: #667eea">Conteúdos</h2>
           <div class="header-actions">
-            <input 
-              v-model="filtros.conteudos.busca" 
-              placeholder="Buscar..." 
+            <input
+              v-model="filtros.conteudos.busca"
+              placeholder="Buscar..."
               class="search-input"
               @input="filtrarConteudos"
             >
@@ -429,7 +431,7 @@
               Nenhum conteúdo encontrado
             </div>
             <div v-for="item in conteudosFiltrados" :key="item.id" class="list-item">
-              <div class="item-icon" :class="item.materia?.toLowerCase()">
+              <div class="item-icon" :class="item.materia?.toLowerCase()" :style="{ background: item.materia === 'Matemática' ? '#667eea20' : '#764ba220', color: item.materia === 'Matemática' ? '#667eea' : '#764ba2' }">
                 <span class="material-icons">
                   {{ item.materia === 'Matemática' ? 'functions' :
                      item.materia === 'Física' ? 'science' : 'menu_book' }}
@@ -439,21 +441,21 @@
                 <div class="item-title">{{ item.titulo }}</div>
                 <div class="item-subtitle">por {{ item.explicador?.nome || item.explicador }}</div>
                 <div class="item-tags">
-                  <span class="tag" :class="item.materia?.toLowerCase()">{{ item.materia }}</span>
+                  <span class="tag" :class="item.materia?.toLowerCase()" :style="{ background: item.materia === 'Matemática' ? '#667eea20' : '#764ba220', color: item.materia === 'Matemática' ? '#667eea' : '#764ba2' }">{{ item.materia }}</span>
                   <span class="tag" :class="item.status?.toLowerCase()">{{ item.status }}</span>
                 </div>
               </div>
               <div class="item-stats">
                 <div>{{ item.vendas_count || 0 }} vendas</div>
-                <div class="highlight">{{ formatarPreco(item.preco) }}</div>
+                <div class="highlight" style="color: #667eea">{{ formatarPreco(item.preco) }}</div>
               </div>
               <div class="item-actions">
-                <button v-if="item.status === 'Pendente'" class="action-btn success" @click="aprovarConteudo(item)" title="Aprovar">✅</button>
-                <button v-if="item.status === 'Pendente'" class="action-btn danger" @click="reprovarConteudo(item)" title="Reprovar">❌</button>
-                <button class="action-btn" @click="editarConteudo(item)" title="Editar preço">✏️</button>
-                <button 
-                  class="action-btn" 
-                  :class="item.status === 'Ativo' ? 'warning' : 'success'" 
+                <button v-if="item.status === 'Pendente'" class="action-btn success" @click="aprovarConteudo(item)" title="Aprovar" style="color: #667eea">✅</button>
+                <button v-if="item.status === 'Pendente'" class="action-btn danger" @click="reprovarConteudo(item)" title="Reprovar" style="color: #dc3545">❌</button>
+                <button class="action-btn" @click="editarConteudo(item)" title="Editar preço" style="color: #764ba2">✏️</button>
+                <button
+                  class="action-btn"
+                  :class="item.status === 'Ativo' ? 'warning' : 'success'"
                   @click="toggleStatusConteudo(item)"
                   :title="item.status === 'Ativo' ? 'Desativar' : 'Ativar'"
                 >
@@ -463,12 +465,13 @@
             </div>
           </div>
           <div v-if="paginas.conteudos.totalPages > 1" class="pagination">
-            <button 
-              v-for="page in paginas.conteudos.totalPages" 
+            <button
+              v-for="page in paginas.conteudos.totalPages"
               :key="page"
               class="page-btn"
               :class="{ active: paginas.conteudos.currentPage === page }"
               @click="carregarConteudos(page)"
+              :style="paginas.conteudos.currentPage === page ? 'background: linear-gradient(135deg, #667eea, #764ba2); border: none;' : ''"
             >
               {{ page }}
             </button>
@@ -479,11 +482,11 @@
       <!-- TRANSAÇÕES -->
       <div v-if="tab === 'transacoes'" class="tab-page">
         <div class="tab-header">
-          <h2>Transações</h2>
+          <h2 style="color: #764ba2">Transações</h2>
           <div class="header-actions">
-            <input 
-              v-model="filtros.transacoes.busca" 
-              placeholder="Buscar..." 
+            <input
+              v-model="filtros.transacoes.busca"
+              placeholder="Buscar..."
               class="search-input"
               @input="filtrarTransacoes"
             >
@@ -507,7 +510,7 @@
               Nenhuma transação encontrada
             </div>
             <div v-for="trans in transacoesFiltradas" :key="trans.id" class="list-item">
-              <div class="item-icon" :class="trans.tipo?.toLowerCase()">
+              <div class="item-icon" :class="trans.tipo?.toLowerCase()" :style="{ background: trans.tipo === 'Sessão' ? '#667eea20' : '#764ba220', color: trans.tipo === 'Sessão' ? '#667eea' : '#764ba2' }">
                 <span class="material-icons">{{ trans.tipo === 'Sessão' ? 'record_voice_over' : 'menu_book' }}</span>
               </div>
               <div class="item-info">
@@ -519,18 +522,19 @@
                 <div class="item-date">{{ formatarData(trans.created_at) }}</div>
               </div>
               <div class="item-values">
-                <div class="main-value">{{ formatarPreco(trans.valor) }}</div>
+                <div class="main-value" style="color: #667eea">{{ formatarPreco(trans.valor) }}</div>
                 <div class="commission">+{{ formatarPreco(trans.comissao) }}</div>
               </div>
             </div>
           </div>
           <div v-if="paginas.transacoes.totalPages > 1" class="pagination">
-            <button 
-              v-for="page in paginas.transacoes.totalPages" 
+            <button
+              v-for="page in paginas.transacoes.totalPages"
               :key="page"
               class="page-btn"
               :class="{ active: paginas.transacoes.currentPage === page }"
               @click="carregarTransacoes(page)"
+              :style="paginas.transacoes.currentPage === page ? 'background: linear-gradient(135deg, #667eea, #764ba2); border: none;' : ''"
             >
               {{ page }}
             </button>
@@ -545,7 +549,7 @@
             <img :src="userAvatar" :alt="userNome">
             <div class="status-dot online"></div>
           </div>
-          <h2>{{ userNome }}</h2>
+          <h2 style="color: #667eea">{{ userNome }}</h2>
           <p class="profile-email">{{ userEmail }}</p>
           <p class="profile-role">Administrador do Sistema</p>
         </div>
@@ -563,19 +567,19 @@
 
         <div class="menu-list">
           <button class="menu-item" @click="editarPerfil">
-            <span class="material-icons">edit</span>
+            <span class="material-icons" style="color: #667eea">edit</span>
             Editar Perfil
           </button>
           <button class="menu-item" @click="alterarSenha">
-            <span class="material-icons">lock</span>
+            <span class="material-icons" style="color: #764ba2">lock</span>
             Alterar Senha
           </button>
           <button class="menu-item" @click="configuracoes">
-            <span class="material-icons">settings</span>
+            <span class="material-icons" style="color: #667eea">settings</span>
             Configurações
           </button>
           <button class="menu-item" @click="ajuda">
-            <span class="material-icons">help</span>
+            <span class="material-icons" style="color: #764ba2">help</span>
             Ajuda e Suporte
           </button>
           <button class="menu-item logout" @click="logout">
@@ -592,7 +596,7 @@
     <!-- Modal de Erro -->
     <div v-if="erroDialog" class="modal-overlay" @click.self="erroDialog = false">
       <div class="modal-content">
-        <div class="modal-header error">
+        <div class="modal-header error" style="background: linear-gradient(135deg, #667eea, #764ba2)">
           <h3>Erro</h3>
           <button class="close-btn" @click="erroDialog = false">✕</button>
         </div>
@@ -600,7 +604,7 @@
           <p>{{ erroMensagem }}</p>
         </div>
         <div class="modal-footer">
-          <button class="btn-primary" @click="erroDialog = false">OK</button>
+          <button class="btn-primary" @click="erroDialog = false" style="background: linear-gradient(135deg, #667eea, #764ba2)">OK</button>
         </div>
       </div>
     </div>
@@ -608,7 +612,7 @@
     <!-- Modal Detalhes do Usuário -->
     <div v-if="usuarioDialog" class="modal-overlay" @click.self="usuarioDialog = false">
       <div class="modal-content">
-        <div class="modal-header">
+        <div class="modal-header" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white">
           <h3>Detalhes do Usuário</h3>
           <button class="close-btn" @click="usuarioDialog = false">✕</button>
         </div>
@@ -640,15 +644,15 @@
             <h4>Estatísticas</h4>
             <div class="stats-grid">
               <div class="stat">
-                <span class="value">{{ usuarioSelecionado.explicador?.sessoes_realizadas || 0 }}</span>
+                <span class="value" style="color: #667eea">{{ usuarioSelecionado.explicador?.sessoes_realizadas || 0 }}</span>
                 <span class="label">Sessões</span>
               </div>
               <div class="stat">
-                <span class="value">{{ usuarioSelecionado.explicador?.estudantes_atendidos || 0 }}</span>
+                <span class="value" style="color: #764ba2">{{ usuarioSelecionado.explicador?.estudantes_atendidos || 0 }}</span>
                 <span class="label">Alunos</span>
               </div>
               <div class="stat">
-                <span class="value">{{ formatarPreco(usuarioSelecionado.explicador?.ganhos_mes || 0) }}</span>
+                <span class="value" style="color: #667eea">{{ formatarPreco(usuarioSelecionado.explicador?.ganhos_mes || 0) }}</span>
                 <span class="label">Ganhos/mês</span>
               </div>
             </div>
@@ -656,7 +660,7 @@
         </div>
         <div class="modal-footer">
           <button class="btn-secondary" @click="usuarioDialog = false">Fechar</button>
-          <button class="btn-primary" @click="editarUsuario(usuarioSelecionado)">Editar</button>
+          <button class="btn-primary" @click="editarUsuario(usuarioSelecionado)" style="background: linear-gradient(135deg, #667eea, #764ba2)">Editar</button>
         </div>
       </div>
     </div>
@@ -668,7 +672,7 @@ import Api from '../services/api.js'
 
 export default {
   name: 'AdminPage',
-  
+
   data() {
     return {
       // Estado
@@ -677,10 +681,10 @@ export default {
       tab: 'dashboard',
       notificacoesNaoLidas: 3,
       userMenuOpen: false,
-      
+
       // Usuário
       user: Api.AuthService.getUser() || {},
-      
+
       // Diálogos
       erroDialog: false,
       erroMensagem: '',
@@ -748,93 +752,93 @@ export default {
     userAvatar() {
       return this.user?.avatar || 'https://cdn.quasar.dev/img/avatar6.jpg'
     },
-    
+
     // Usuários filtrados
     usuariosFiltrados() {
       let result = [...this.usuarios]
-      
+
       if (this.filtros.usuarios.busca) {
         const termo = this.filtros.usuarios.busca.toLowerCase()
-        result = result.filter(u => 
+        result = result.filter(u =>
           u.nome?.toLowerCase().includes(termo) ||
           u.email?.toLowerCase().includes(termo)
         )
       }
-      
+
       if (this.filtros.usuarios.tipo) {
         result = result.filter(u => u.tipo === this.filtros.usuarios.tipo)
       }
-      
+
       if (this.filtros.usuarios.status) {
         result = result.filter(u => u.status === this.filtros.usuarios.status)
       }
-      
+
       return result
     },
 
     // Explicadores filtrados
     explicadoresFiltrados() {
       let result = [...this.explicadores]
-      
+
       if (this.filtros.explicadores.busca) {
         const termo = this.filtros.explicadores.busca.toLowerCase()
-        result = result.filter(e => 
+        result = result.filter(e =>
           e.user?.nome?.toLowerCase().includes(termo) ||
           e.user?.email?.toLowerCase().includes(termo)
         )
       }
-      
+
       if (this.filtros.explicadores.status) {
         result = result.filter(e => e.status === this.filtros.explicadores.status)
       }
-      
+
       return result
     },
 
     // Conteúdos filtrados
     conteudosFiltrados() {
       let result = [...this.conteudos]
-      
+
       if (this.filtros.conteudos.busca) {
         const termo = this.filtros.conteudos.busca.toLowerCase()
-        result = result.filter(c => 
+        result = result.filter(c =>
           c.titulo?.toLowerCase().includes(termo) ||
           c.explicador?.nome?.toLowerCase().includes(termo)
         )
       }
-      
+
       if (this.filtros.conteudos.status) {
         result = result.filter(c => c.status === this.filtros.conteudos.status)
       }
-      
+
       if (this.filtros.conteudos.materia) {
         result = result.filter(c => c.materia === this.filtros.conteudos.materia)
       }
-      
+
       return result
     },
 
     // Transações filtradas
     transacoesFiltradas() {
       let result = [...this.transacoes]
-      
+
       if (this.filtros.transacoes.busca) {
         const termo = this.filtros.transacoes.busca.toLowerCase()
-        result = result.filter(t => 
+        result = result.filter(t =>
           t.id?.toLowerCase().includes(termo) ||
           t.estudante_nome?.toLowerCase().includes(termo) ||
           t.explicador_nome?.toLowerCase().includes(termo)
         )
       }
-      
+
       if (this.filtros.transacoes.tipo) {
         result = result.filter(t => t.tipo === this.filtros.transacoes.tipo)
       }
-      
+
       if (this.filtros.transacoes.status) {
         result = result.filter(t => t.status === this.filtros.transacoes.status)
       }
-      
+
       return result
     }
   },
@@ -898,13 +902,13 @@ export default {
     async carregarDashboard() {
       try {
         const data = await Api.AdminService.getDashboard()
-        
+
         this.stats = data.stats || this.stats
         this.atividades = this.processarAtividades(data.atividades)
         this.topExplicadores = data.atividades?.topExplicadores || this.topExplicadores
         this.ultimosUsuarios = data.atividades?.usuarios || []
         this.ultimasTransacoes = data.atividades?.transacoes || []
-        
+
       } catch (err) {
         console.error('Erro ao carregar dashboard:', err)
       }
@@ -916,16 +920,16 @@ export default {
           page,
           ...this.filtros.usuarios
         }
-        
+
         const data = await Api.AdminService.getUsuarios(params)
-        
+
         this.usuarios = data.data || []
         this.usuariosOriginais = [...this.usuarios]
         this.paginas.usuarios = {
           currentPage: data.current_page || page,
           totalPages: data.last_page || 1
         }
-        
+
       } catch (err) {
         console.error('Erro ao carregar usuários:', err)
       }
@@ -937,16 +941,16 @@ export default {
           page,
           ...this.filtros.explicadores
         }
-        
+
         const data = await Api.AdminService.getExplicadores(params)
-        
+
         this.explicadores = data.data || []
         this.explicadoresOriginais = [...this.explicadores]
         this.paginas.explicadores = {
           currentPage: data.current_page || page,
           totalPages: data.last_page || 1
         }
-        
+
       } catch (err) {
         console.error('Erro ao carregar explicadores:', err)
       }
@@ -958,16 +962,16 @@ export default {
           page,
           ...this.filtros.conteudos
         }
-        
+
         const data = await Api.AdminService.getConteudos(params)
-        
+
         this.conteudos = data.data || []
         this.conteudosOriginais = [...this.conteudos]
         this.paginas.conteudos = {
           currentPage: data.current_page || page,
           totalPages: data.last_page || 1
         }
-        
+
       } catch (err) {
         console.error('Erro ao carregar conteúdos:', err)
       }
@@ -979,16 +983,16 @@ export default {
           page,
           ...this.filtros.transacoes
         }
-        
+
         const data = await Api.AdminService.getTransacoes(params)
-        
+
         this.transacoes = data.data || []
         this.transacoesOriginais = [...this.transacoes]
         this.paginas.transacoes = {
           currentPage: data.current_page || page,
           totalPages: data.last_page || 1
         }
-        
+
       } catch (err) {
         console.error('Erro ao carregar transações:', err)
         // Não mostrar erro para o usuário, apenas log
@@ -1052,7 +1056,7 @@ export default {
 
     async toggleStatusUsuario(user) {
       const acao = user.status === 'Bloqueado' ? 'desbloquear' : 'bloquear'
-      
+
       if (!confirm(`Deseja ${acao} ${user.nome}?`)) return
 
       try {
@@ -1123,7 +1127,7 @@ export default {
 
     async toggleStatusConteudo(item) {
       const acao = item.status === 'Ativo' ? 'desativar' : 'ativar'
-      
+
       if (!confirm(`${acao} o conteúdo "${item.titulo}"?`)) return
 
       try {
@@ -1155,10 +1159,10 @@ export default {
     alterarSenha() {
       const senhaAtual = prompt('Senha atual:')
       if (!senhaAtual) return
-      
+
       const novaSenha = prompt('Nova senha:')
       if (!novaSenha) return
-      
+
       const confirmarSenha = prompt('Confirmar nova senha:')
       if (novaSenha !== confirmarSenha) {
         alert('As senhas não coincidem')
@@ -1209,35 +1213,35 @@ export default {
     // ===== UTILITÁRIOS =====
     processarAtividades(atividades) {
       if (!atividades) return []
-      
+
       const lista = []
-      
+
       if (atividades.usuarios) {
         atividades.usuarios.forEach(u => {
           lista.push({
             id: `user-${u.id}`,
             icon: 'person_add',
-            cor: '#1976D2',
+            cor: '#667eea',
             titulo: 'Novo usuário',
             descricao: `${u.nome} criou conta`,
             tempo: this.timeAgo(u.created_at)
           })
         })
       }
-      
+
       if (atividades.transacoes) {
         atividades.transacoes.forEach(t => {
           lista.push({
             id: `trans-${t.id}`,
             icon: 'attach_money',
-            cor: '#28a745',
+            cor: '#764ba2',
             titulo: 'Nova transação',
             descricao: `${this.formatarPreco(t.valor)} - ${t.descricao || 'Transação'}`,
             tempo: this.timeAgo(t.created_at)
           })
         })
       }
-      
+
       if (atividades.feedbacks) {
         atividades.feedbacks.forEach(f => {
           lista.push({
@@ -1250,7 +1254,7 @@ export default {
           })
         })
       }
-      
+
       return lista.slice(0, 5)
     },
 
@@ -1305,7 +1309,7 @@ export default {
 
   mounted() {
     this.carregarDados()
-    
+
     // Fechar menu ao clicar fora
     document.addEventListener('click', (e) => {
       if (!e.target.closest('.user-info') && !e.target.closest('.user-dropdown')) {
@@ -1421,7 +1425,7 @@ export default {
 
 .dropdown-header .material-icons {
   font-size: 40px;
-  color: #1976D2;
+  color: #667eea;
 }
 
 .user-name {
@@ -1516,7 +1520,9 @@ export default {
 }
 
 .nav-item.active {
-  color: #1976D2;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .nav-item .material-icons {
@@ -1555,7 +1561,7 @@ export default {
   width: 40px;
   height: 40px;
   border: 3px solid #f3f3f3;
-  border-top: 3px solid #1976D2;
+  border-top: 3px solid #667eea;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 16px;
@@ -1575,7 +1581,6 @@ export default {
 .retry-btn {
   margin-top: 16px;
   padding: 8px 16px;
-  background: #1976D2;
   color: white;
   border: none;
   border-radius: 8px;
@@ -1656,7 +1661,6 @@ export default {
 .view-all {
   background: none;
   border: none;
-  color: #1976D2;
   font-size: 13px;
   cursor: pointer;
 }
@@ -1799,7 +1803,6 @@ export default {
 }
 
 .item-stats .highlight {
-  color: #1976D2;
   font-weight: 600;
 }
 
@@ -1811,8 +1814,8 @@ export default {
 }
 
 .stat-badge.highlight {
-  background: #e3f2fd;
-  color: #1976D2;
+  background: rgba(102, 126, 234, 0.1);
+  color: #667eea;
 }
 
 /* Values */
@@ -1822,7 +1825,6 @@ export default {
 
 .main-value {
   font-weight: 600;
-  color: #1976D2;
   font-size: 14px;
 }
 
@@ -1864,7 +1866,6 @@ export default {
 /* Rating */
 .rating {
   font-size: 12px;
-  color: #ffc107;
   margin: 4px 0;
 }
 
@@ -1875,7 +1876,6 @@ export default {
 
 /* WhatsApp */
 .whatsapp-card {
-  background: #25D366;
   color: white;
   border-radius: 16px;
   padding: 16px;
@@ -1915,7 +1915,6 @@ export default {
 
 .follow-btn {
   background: white;
-  color: #25D366;
   border: none;
   padding: 8px 16px;
   border-radius: 20px;
@@ -1983,9 +1982,7 @@ export default {
 }
 
 .page-btn.active {
-  background: #1976D2;
   color: white;
-  border-color: #1976D2;
 }
 
 /* Perfil */
@@ -2124,16 +2121,7 @@ export default {
   justify-content: space-between;
   padding: 20px;
   border-bottom: 1px solid #eee;
-}
-
-.modal-header.error {
-  background: #dc3545;
   color: white;
-}
-
-.modal-header.warning {
-  background: #ffc107;
-  color: #333;
 }
 
 .modal-header h3 {
@@ -2165,7 +2153,6 @@ export default {
 
 .btn-primary {
   padding: 8px 16px;
-  background: #1976D2;
   color: white;
   border: none;
   border-radius: 8px;
@@ -2245,7 +2232,6 @@ export default {
 .stats-grid .value {
   font-size: 16px;
   font-weight: 600;
-  color: #1976D2;
 }
 
 .stats-grid .label {
@@ -2254,12 +2240,12 @@ export default {
 }
 
 /* Ícones de matéria */
-.item-icon.matemática { background: #e3f2fd; color: #1976D2; }
-.item-icon.física { background: #e0f2f1; color: #26A69A; }
+.item-icon.matemática { background: #667eea20; color: #667eea; }
+.item-icon.física { background: #764ba220; color: #764ba2; }
 .item-icon.química { background: #f3e5f5; color: #9C27B0; }
 .item-icon.português { background: #e8f5e9; color: #28a745; }
-.item-icon.sessão { background: #e0f2f1; color: #26A69A; }
-.item-icon.conteúdo { background: #f3e5f5; color: #9C27B0; }
+.item-icon.sessão { background: #667eea20; color: #667eea; }
+.item-icon.conteúdo { background: #764ba220; color: #764ba2; }
 
 /* Responsivo */
 @media (max-width: 480px) {

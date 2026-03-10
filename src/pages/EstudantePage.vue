@@ -1,11 +1,11 @@
 <template>
   <q-layout view="hHh LpR fFf">
     <!-- Header -->
-    <q-header elevated class="bg-primary text-white">
+    <q-header elevated class="bg-primary text-white" style="background: linear-gradient(135deg, #667eea, #764ba2) !important">
       <q-toolbar>
         <q-avatar @click="abrirMenuPerfil" class="cursor-pointer">
-          <img 
-            :src="userAvatar" 
+          <img
+            :src="userAvatar"
             @error="$event.target.src = configs.urls?.avatar_aluno_padrao || 'https://cdn.quasar.dev/img/avatar2.jpg'"
           >
         </q-avatar>
@@ -17,12 +17,13 @@
         </q-toolbar-title>
 
         <!-- Saldo -->
-        <q-chip 
-          dense 
-          class="bg-white text-primary q-mr-sm cursor-pointer" 
+        <q-chip
+          dense
+          class="bg-white text-primary q-mr-sm cursor-pointer"
+          style="color: #667eea !important"
           @click="verExtrato"
         >
-          <q-avatar icon="account_balance_wallet" color="primary" text-color="white" />
+          <q-avatar icon="account_balance_wallet" color="primary" text-color="white" style="background: linear-gradient(135deg, #667eea, #764ba2)" />
           {{ formatarPreco(saldo) }}
         </q-chip>
 
@@ -50,7 +51,7 @@
 
           <q-item clickable v-close-popup @click="editarPerfil">
             <q-item-section avatar>
-              <q-icon name="edit" color="primary" />
+              <q-icon name="edit" style="color: #667eea" />
             </q-item-section>
             <q-item-section>Editar Perfil</q-item-section>
           </q-item>
@@ -76,7 +77,7 @@
 
     <!-- Navegação Inferior -->
     <q-footer class="bg-white text-dark">
-      <q-tabs v-model="tab" dense class="text-grey-7" active-color="primary" indicator-color="primary" align="justify">
+      <q-tabs v-model="tab" dense class="text-grey-7" active-color="primary" indicator-color="primary" align="justify" style="--q-primary: #667eea">
         <q-tab name="pedidos" icon="list" :label="configs.textos?.abas?.pedidos || 'Pedidos'">
           <q-badge v-if="pedidosAtivos > 0" color="red" floating>{{ pedidosAtivos }}</q-badge>
         </q-tab>
@@ -92,7 +93,7 @@
     <q-page-container>
       <!-- Loading -->
       <div v-if="loading" class="loading-container">
-        <q-spinner color="primary" size="3em" />
+        <q-spinner color="primary" size="3em" style="color: #667eea !important" />
         <p class="q-mt-md">{{ configs.textos?.carregando || 'Carregando...' }}</p>
       </div>
 
@@ -100,15 +101,282 @@
       <template v-else>
         <!-- ==================== PEDIDOS ==================== -->
         <q-page v-if="tab === 'pedidos'" class="q-pa-md">
-          <!-- Botão Novo Pedido -->
+
+          <!-- ===== BANNER INTELIGENTE ===== -->
+          <div class="row q-mb-xl">
+            <div class="col-12">
+              <!-- Banner de Promoção (se houver) -->
+              <template v-if="promocoesAtivas && promocoesAtivas.length > 0">
+                <q-card flat class="banner-promocional" @click="verPromocao(promocoesAtivas[0])">
+                  <q-img
+                    :src="promocoesAtivas[0].imagem || 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1471&q=80'"
+                    class="banner-imagem"
+                    style="height: 200px; border-radius: 24px;"
+                  >
+                    <div class="banner-overlay"></div>
+                    <div class="banner-conteudo absolute-bottom">
+                      <div class="banner-tag" :style="{background: 'linear-gradient(135deg, #667eea, #764ba2)'}">
+                        {{ promocoesAtivas[0].tag || 'PROMOÇÃO' }}
+                      </div>
+                      <h4 class="banner-titulo">{{ promocoesAtivas[0].titulo }}</h4>
+                      <p class="banner-descricao">{{ promocoesAtivas[0].descricao }}</p>
+                      <div class="banner-acoes">
+                        <span class="banner-valor">{{ promocoesAtivas[0].valor }}</span>
+                        <q-btn
+                          flat
+                          dense
+                          label="Aproveitar"
+                          class="banner-btn"
+                          style="color: white; border: 1px solid white;"
+                          @click.stop="usarPromocao(promocoesAtivas[0])"
+                        />
+                      </div>
+                    </div>
+                  </q-img>
+                </q-card>
+              </template>
+
+              <!-- Banner Informativo (se não houver promoções) -->
+              <template v-else>
+                <q-card flat class="banner-informativo" style="background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 24px; overflow: hidden;">
+                  <div class="row items-center">
+                    <div class="col-12 col-md-7 q-pa-lg">
+                      <div class="banner-info">
+                        <div class="banner-info-icon">
+                          <span class="material-icons" style="font-size: 48px; color: rgba(255,255,255,0.3);">auto_stories</span>
+                        </div>
+                        <h3 class="banner-info-titulo text-white">Olá, {{ userNome }}! 👋</h3>
+                        <p class="banner-info-texto text-white" style="opacity: 0.9; font-size: 16px; line-height: 1.6;">
+                          {{ mensagemInformativa }}
+                        </p>
+
+                        <div class="banner-info-stats row q-col-gutter-md q-mt-md">
+                          <div class="col-4">
+                            <div class="stat-card">
+                              <span class="stat-number text-white">{{ estatisticas.pedidos || 0 }}</span>
+                              <span class="stat-label text-white">Pedidos</span>
+                            </div>
+                          </div>
+                          <div class="col-4">
+                            <div class="stat-card">
+                              <span class="stat-number text-white">{{ estatisticas.sessoes || 0 }}</span>
+                              <span class="stat-label text-white">Sessões</span>
+                            </div>
+                          </div>
+                          <div class="col-4">
+                            <div class="stat-card">
+                              <span class="stat-number text-white">{{ bibliotecaCount || 0 }}</span>
+                              <span class="stat-label text-white">Conteúdos</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="banner-info-dicas q-mt-md">
+                          <div class="dica-item">
+                            <span class="material-icons text-white" style="font-size: 20px;">lightbulb</span>
+                            <span class="text-white">Dica: {{ dicaDoDia }}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-12 col-md-5">
+                      <div class="banner-ilustracao">
+                        <img
+                          src="https://cdni.iconscout.com/illustration/premium/thumb/student-studying-4928806-4119645.png"
+                          alt="Estudante"
+                          style="width: 100%; max-height: 250px; object-fit: contain;"
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </q-card>
+              </template>
+            </div>
+          </div>
+
+          <!-- ===== BOTÃO CRIAR PEDIDO ===== -->
           <div class="row q-mb-md">
-            <q-btn 
-              color="primary" 
-              :label="configs.textos?.botoes?.novoPedido || '+ Novo Pedido'" 
-              icon="add" 
-              class="full-width" 
-              @click="novoPedidoDialog = true" 
+            <q-btn
+              color="primary"
+              label="Criar Pedido de Ajuda"
+              icon="add_circle"
+              class="full-width"
+              style="background: linear-gradient(135deg, #667eea, #764ba2); height: 56px; font-size: 16px; font-weight: 600; border-radius: 16px;"
+              @click="novoPedidoDialog = true"
             />
+          </div>
+
+          <!-- ===== PROPOSTAS DE EXPLICADORES ===== -->
+          <div class="row q-mb-lg">
+            <div class="col-12">
+              <div class="text-h6 q-mb-md" style="color: #667eea; font-weight: 600; display: flex; align-items: center;">
+                <span class="material-icons q-mr-sm">chat</span>
+                Propostas para você
+                <q-badge v-if="totalPropostasPendentes > 0" color="red" class="q-ml-sm">{{ totalPropostasPendentes }}</q-badge>
+              </div>
+            </div>
+
+            <div class="col-12">
+              <template v-if="propostasDestaque && propostasDestaque.length > 0">
+                <div class="row q-col-gutter-md">
+                  <div v-for="prop in propostasDestaque" :key="prop.id" class="col-12">
+                    <q-card flat bordered class="proposta-card">
+                      <q-card-section>
+                        <div class="row items-center">
+                          <q-avatar size="48px" class="q-mr-md">
+                            <img :src="prop.explicador?.avatar || configs.urls?.avatar_explicador_padrao">
+                          </q-avatar>
+
+                          <div class="col">
+                            <div class="row items-center">
+                              <span class="text-weight-bold">{{ prop.explicador?.nome || 'Explicador' }}</span>
+                              <q-rating
+                                :value="prop.explicador?.avaliacao || 0"
+                                size="16px"
+                                :max="5"
+                                color="accent"
+                                readonly
+                                class="q-ml-xs"
+                              />
+                            </div>
+                            <div class="text-caption text-grey-7">
+                              {{ prop.explicador?.materias?.join(' • ') || 'Matérias' }}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="q-mt-md">
+                          <div class="text-subtitle2">{{ prop.pedido?.titulo || 'Proposta para seu pedido' }}</div>
+                          <div class="text-caption text-grey-7">
+                            {{ prop.pedido?.descricao || 'Descrição do pedido...' }}
+                          </div>
+                        </div>
+
+                        <div class="row items-center justify-between q-mt-md">
+                          <div>
+                            <span class="text-weight-bold text-h6" style="color: #667eea">
+                              {{ formatarPreco(prop.valor) }}
+                            </span>
+                            <span class="text-caption text-grey-7 q-ml-xs">/sessão</span>
+                          </div>
+
+                          <div class="row items-center">
+                            <q-btn
+                              flat
+                              round
+                              color="positive"
+                              icon="check"
+                              size="sm"
+                              @click="aceitarProposta(prop.id)"
+                            >
+                              <q-tooltip>Aceitar proposta</q-tooltip>
+                            </q-btn>
+                            <q-btn
+                              flat
+                              round
+                              color="negative"
+                              icon="close"
+                              size="sm"
+                              @click="recusarProposta(prop.id)"
+                            >
+                              <q-tooltip>Recusar</q-tooltip>
+                            </q-btn>
+                          </div>
+                        </div>
+                      </q-card-section>
+                    </q-card>
+                  </div>
+                </div>
+              </template>
+
+              <template v-else>
+                <q-card flat bordered class="text-center q-py-xl">
+                  <q-card-section>
+                    <q-icon name="inbox" size="48px" color="grey-4" />
+                    <div class="text-h6 text-grey-7 q-mt-md">Nenhuma proposta no momento</div>
+                    <div class="text-caption text-grey-6">
+                      Quando explicadores enviarem propostas para seus pedidos, elas aparecerão aqui
+                    </div>
+                  </q-card-section>
+                </q-card>
+              </template>
+            </div>
+          </div>
+
+          <!-- ===== CONTEÚDOS RELACIONADOS ===== -->
+          <div class="row q-mb-lg">
+            <div class="col-12">
+              <div class="text-h6 q-mb-md" style="color: #667eea; font-weight: 600; display: flex; align-items: center;">
+                <span class="material-icons q-mr-sm">menu_book</span>
+                Recomendados para você
+              </div>
+            </div>
+
+            <div class="col-12">
+              <template v-if="conteudosRelacionados && conteudosRelacionados.length > 0">
+                <div class="row q-col-gutter-md">
+                  <div v-for="item in conteudosRelacionados" :key="item.id" class="col-6 col-md-3">
+                    <q-card flat bordered class="conteudo-card" @click="verDetalhesConteudo(item)">
+                      <q-img
+                        :src="item.capa || configs.urls?.capa_padrao"
+                        ratio="1"
+                        style="border-radius: 12px 12px 0 0"
+                      >
+                        <div class="absolute-top-left q-pa-xs">
+                          <q-badge style="background: linear-gradient(135deg, #667eea, #764ba2)">
+                            {{ obterNomeMateria(item.materia_id) }}
+                          </q-badge>
+                        </div>
+                      </q-img>
+
+                      <q-card-section class="q-pa-sm">
+                        <div class="text-caption text-weight-bold lines-2">{{ item.titulo }}</div>
+
+                        <div class="row items-center q-mt-xs">
+                          <q-avatar size="16px" class="q-mr-xs">
+                            <img :src="item.explicador?.avatar || configs.urls?.avatar_explicador_padrao">
+                          </q-avatar>
+                          <span class="text-caption text-grey-7">{{ item.explicador?.nome || 'Explicador' }}</span>
+                        </div>
+
+                        <div class="row items-center justify-between q-mt-xs">
+                          <span class="text-weight-bold" style="color: #667eea">
+                            {{ formatarPreco(item.preco) }}
+                          </span>
+                          <q-rating
+                            :value="item.avaliacao || 0"
+                            size="12px"
+                            :max="5"
+                            color="accent"
+                            readonly
+                          />
+                        </div>
+                      </q-card-section>
+                    </q-card>
+                  </div>
+                </div>
+              </template>
+
+              <template v-else>
+                <q-card flat bordered class="text-center q-py-xl">
+                  <q-card-section>
+                    <q-icon name="menu_book" size="48px" color="grey-4" />
+                    <div class="text-h6 text-grey-7 q-mt-md">Nenhum conteúdo disponível</div>
+                    <div class="text-caption text-grey-6">
+                      Explore a loja para encontrar conteúdos interessantes
+                    </div>
+                    <q-btn
+                      flat
+                      label="Ir para Loja"
+                      style="color: #667eea"
+                      class="q-mt-md"
+                      @click="tab = 'loja'"
+                    />
+                  </q-card-section>
+                </q-card>
+              </template>
+            </div>
           </div>
 
           <!-- Filtros -->
@@ -120,6 +388,7 @@
               spread
               unelevated
               dense
+              style="--q-primary: #667eea"
             />
           </div>
 
@@ -128,11 +397,12 @@
             <div v-if="pedidosFiltrados.length === 0" class="col-12 text-center q-py-xl">
               <q-icon name="inbox" size="64px" color="grey-3" />
               <div class="text-h6 text-grey-7 q-mt-md">{{ configs.mensagens?.vazio?.pedidos || 'Nenhum pedido encontrado' }}</div>
-              <q-btn 
-                color="primary" 
-                :label="configs.textos?.botoes?.criarPrimeiroPedido || 'Criar primeiro pedido'" 
-                class="q-mt-md" 
-                @click="novoPedidoDialog = true" 
+              <q-btn
+                color="primary"
+                :label="configs.textos?.botoes?.criarPrimeiroPedido || 'Criar primeiro pedido'"
+                class="q-mt-md"
+                style="background: linear-gradient(135deg, #667eea, #764ba2)"
+                @click="novoPedidoDialog = true"
               />
             </div>
 
@@ -142,7 +412,7 @@
                   <!-- Cabeçalho -->
                   <div class="row items-center justify-between">
                     <div class="row items-center">
-                      <q-avatar :color="configs.cores?.materia_padrao || 'primary'" text-color="white" size="36px" class="q-mr-sm">
+                      <q-avatar style="background: linear-gradient(135deg, #667eea, #764ba2)" text-color="white" size="36px" class="q-mr-sm">
                         <q-icon :name="configs.icones?.materia_padrao || 'school'" size="20px" />
                       </q-avatar>
                       <div>
@@ -166,7 +436,7 @@
                     <div v-for="prop in pedido.propostas" :key="prop.id" class="row items-center justify-between bg-grey-2 q-pa-sm rounded-borders q-mb-xs">
                       <div class="row items-center">
                         <q-avatar size="28px" class="q-mr-xs">
-                          <img 
+                          <img
                             :src="prop.explicador?.avatar || configs.urls?.avatar_explicador_padrao || 'https://cdn.quasar.dev/img/avatar3.jpg'"
                             @error="$event.target.src = configs.urls?.avatar_explicador_padrao || 'https://cdn.quasar.dev/img/avatar3.jpg'"
                           >
@@ -179,9 +449,9 @@
                         </div>
                       </div>
                       <div class="row items-center">
-                        <div class="text-primary text-weight-bold q-mr-md">{{ formatarPreco(prop.valor) }}</div>
-                        <q-btn 
-                          flat round color="positive" icon="check" size="sm" 
+                        <div class="text-primary text-weight-bold q-mr-md" style="color: #667eea">{{ formatarPreco(prop.valor) }}</div>
+                        <q-btn
+                          flat round color="positive" icon="check" size="sm"
                           @click="aceitarProposta(prop.id)"
                           :title="configs.textos?.botoes?.aceitarProposta || 'Aceitar proposta'"
                         >
@@ -196,7 +466,7 @@
                     <div class="row items-center justify-between">
                       <div class="row items-center">
                         <q-avatar size="32px" class="q-mr-sm">
-                          <img 
+                          <img
                             :src="pedido.explicador.avatar || configs.urls?.avatar_explicador_padrao || 'https://cdn.quasar.dev/img/avatar3.jpg'"
                             @error="$event.target.src = configs.urls?.avatar_explicador_padrao || 'https://cdn.quasar.dev/img/avatar3.jpg'"
                           >
@@ -204,25 +474,25 @@
                         <div>
                           <div class="row items-center">
                             <span class="text-caption text-weight-bold">{{ pedido.explicador.nome }}</span>
-                            <q-rating v-model="pedido.explicador.avaliacao" size="14px" :max="5" color="accent" readonly class="q-ml-xs" />
+                            <q-rating :value="pedido.explicador.avaliacao || 0" size="14px" :max="5" color="accent" readonly class="q-ml-xs" />
                           </div>
                           <div class="text-caption text-grey-7">{{ pedido.explicador.materias?.join(', ') || pedido.materia }}</div>
                         </div>
                       </div>
-                      <div class="text-primary text-weight-bold">{{ formatarPreco(pedido.preco_combinado || pedido.preco) }}</div>
+                      <div class="text-primary text-weight-bold" style="color: #667eea">{{ formatarPreco(pedido.preco_combinado || pedido.preco) }}</div>
                     </div>
                     <div class="row q-mt-md q-col-gutter-sm">
                       <div class="col-6">
-                        <q-btn 
-                          flat :label="configs.textos?.botoes?.chat || 'Chat'" 
-                          color="primary" icon="chat" class="full-width" 
+                        <q-btn
+                          flat :label="configs.textos?.botoes?.chat || 'Chat'"
+                          style="color: #667eea" icon="chat" class="full-width"
                           @click="abrirChat(pedido.explicador)"
                         />
                       </div>
                       <div class="col-6">
-                        <q-btn 
-                          flat :label="configs.textos?.botoes?.detalhes || 'Detalhes'" 
-                          color="secondary" icon="info" class="full-width" 
+                        <q-btn
+                          flat :label="configs.textos?.botoes?.detalhes || 'Detalhes'"
+                          color="secondary" icon="info" class="full-width"
                           @click="verDetalhesPedido(pedido)"
                         />
                       </div>
@@ -234,9 +504,9 @@
                     <div class="text-caption q-mb-xs">{{ configs.textos?.avaliacao || 'Avalie sua experiência:' }}</div>
                     <div class="row items-center justify-between">
                       <q-rating v-model="pedido.avaliacaoTemp" size="1.5em" :max="5" color="accent" />
-                      <q-btn 
-                        flat :label="configs.textos?.botoes?.enviar || 'Enviar'" 
-                        color="primary" size="sm" 
+                      <q-btn
+                        flat :label="configs.textos?.botoes?.enviar || 'Enviar'"
+                        style="color: #667eea" size="sm"
                         @click="avaliarPedido(pedido)"
                         :disable="!pedido.avaliacaoTemp"
                       />
@@ -249,9 +519,9 @@
                       <q-icon name="visibility" size="16px" class="text-grey-7 q-mr-xs" />
                       <span class="text-caption text-grey-7">{{ pedido.visualizacoes || 0 }} {{ configs.textos?.visualizacoes || 'visualizações' }}</span>
                     </div>
-                    <q-btn 
-                      flat :label="configs.textos?.botoes?.verDetalhes || 'Ver detalhes'" 
-                      color="primary" size="sm" 
+                    <q-btn
+                      flat :label="configs.textos?.botoes?.verDetalhes || 'Ver detalhes'"
+                      style="color: #667eea" size="sm"
                       @click="verDetalhesPedido(pedido)"
                     />
                   </div>
@@ -265,7 +535,7 @@
         <q-page v-if="tab === 'biblioteca'" class="q-pa-md">
           <div class="row q-mb-md">
             <div class="col-12">
-              <div class="text-h6">{{ configs.titulos?.biblioteca || 'Minha Biblioteca' }}</div>
+              <div class="text-h6" style="color: #667eea">{{ configs.titulos?.biblioteca || 'Minha Biblioteca' }}</div>
               <div class="text-caption text-grey-7">{{ biblioteca.length }} {{ configs.textos?.itens || 'itens' }}</div>
             </div>
           </div>
@@ -279,6 +549,7 @@
               spread
               unelevated
               dense
+              style="--q-primary: #667eea"
             />
           </div>
 
@@ -286,28 +557,29 @@
             <div v-if="bibliotecaFiltrada.length === 0" class="col-12 text-center q-py-xl">
               <q-icon name="menu_book" size="64px" color="grey-3" />
               <div class="text-h6 text-grey-7 q-mt-md">{{ configs.mensagens?.vazio?.biblioteca || 'Sua biblioteca está vazia' }}</div>
-              <q-btn 
-                color="primary" 
-                :label="configs.textos?.botoes?.explorarConteudos || 'Explorar conteúdos'" 
-                class="q-mt-md" 
-                @click="tab = 'loja'" 
+              <q-btn
+                color="primary"
+                :label="configs.textos?.botoes?.explorarConteudos || 'Explorar conteúdos'"
+                class="q-mt-md"
+                style="background: linear-gradient(135deg, #667eea, #764ba2)"
+                @click="tab = 'loja'"
               />
             </div>
 
             <div v-for="item in bibliotecaFiltrada" :key="item.id" class="col-6 col-md-3">
               <q-card flat bordered class="biblioteca-card" @click="abrirItemBiblioteca(item)">
-                <q-img 
-                  :src="item.conteudo?.capa || configs.urls?.capa_padrao || 'https://cdn.quasar.dev/img/mountains.jpg'" 
+                <q-img
+                  :src="item.conteudo?.capa || configs.urls?.capa_padrao || 'https://cdn.quasar.dev/img/mountains.jpg'"
                   ratio="1"
                   @error="$event.target.src = configs.urls?.capa_padrao || 'https://cdn.quasar.dev/img/mountains.jpg'"
                 >
                   <div class="absolute-top-right q-pa-xs">
-                    <q-btn 
-                      flat round dense 
-                      :color="item.favorito ? 'red' : 'white'" 
-                      :icon="item.favorito ? 'favorite' : 'favorite_border'" 
-                      size="sm" 
-                      @click.stop="toggleFavorito(item)" 
+                    <q-btn
+                      flat round dense
+                      :color="item.favorito ? 'red' : 'white'"
+                      :icon="item.favorito ? 'favorite' : 'favorite_border'"
+                      size="sm"
+                      @click.stop="toggleFavorito(item)"
                     />
                   </div>
                   <div class="absolute-bottom">
@@ -317,7 +589,7 @@
                 <q-card-section class="q-pa-xs">
                   <div class="row items-center justify-between">
                     <span class="text-caption text-grey-7">{{ item.conteudo?.explicador?.nome || 'Explicador' }}</span>
-                    <q-linear-progress :value="item.progresso / 100" color="primary" size="4px" style="width: 50px" rounded />
+                    <q-linear-progress :value="item.progresso / 100" color="primary" size="4px" style="width: 50px; --q-primary: #667eea" rounded />
                   </div>
                 </q-card-section>
               </q-card>
@@ -329,25 +601,25 @@
         <q-page v-if="tab === 'loja'" class="q-pa-md">
           <div class="row q-mb-md">
             <div class="col-12">
-              <div class="text-h6">{{ configs.titulos?.loja || 'Loja de Conteúdos' }}</div>
+              <div class="text-h6" style="color: #667eea">{{ configs.titulos?.loja || 'Loja de Conteúdos' }}</div>
               <div class="text-caption text-grey-7">{{ configs.subtitulos?.loja || 'Aprenda com os melhores' }}</div>
             </div>
           </div>
 
           <!-- Filtros -->
           <div class="row q-mb-md">
-            <q-input 
-              v-model="buscaConteudos" 
-              outlined dense 
-              :placeholder="configs.textos?.busca || 'Buscar...'" 
+            <q-input
+              v-model="buscaConteudos"
+              outlined dense
+              :placeholder="configs.textos?.busca || 'Buscar...'"
               class="col-12 col-md-6"
               debounce="300"
             >
               <template v-slot:prepend>
-                <q-icon name="search" />
+                <q-icon name="search" style="color: #667eea" />
               </template>
               <template v-slot:append>
-                <q-icon v-if="buscaConteudos" name="close" class="cursor-pointer" @click="buscaConteudos = ''" />
+                <q-icon v-if="buscaConteudos" name="close" class="cursor-pointer" @click="buscaConteudos = ''" style="color: #667eea" />
               </template>
             </q-input>
           </div>
@@ -360,6 +632,7 @@
               spread
               unelevated
               dense
+              style="--q-primary: #667eea"
             />
           </div>
 
@@ -384,19 +657,19 @@
 
             <div v-for="item in conteudosOrdenados" :key="item.id" class="col-6 col-md-3">
               <q-card flat bordered class="conteudo-card" @click="verDetalhesConteudo(item)">
-                <q-img 
-                  :src="item.capa || configs.urls?.capa_padrao || 'https://cdn.quasar.dev/img/mountains.jpg'" 
+                <q-img
+                  :src="item.capa || configs.urls?.capa_padrao || 'https://cdn.quasar.dev/img/mountains.jpg'"
                   ratio="1"
                   @error="$event.target.src = configs.urls?.capa_padrao || 'https://cdn.quasar.dev/img/mountains.jpg'"
                 >
                   <div class="absolute-top-left q-pa-xs">
-                    <q-badge :color="configs.cores?.materia_padrao || 'primary'">
+                    <q-badge style="background: linear-gradient(135deg, #667eea, #764ba2)">
                       {{ obterNomeMateria(item.materia_id) }}
                     </q-badge>
                   </div>
                   <div class="absolute-bottom bg-transparent">
                     <div class="text-right">
-                      <q-badge color="primary">{{ formatarPreco(item.preco) }}</q-badge>
+                      <q-badge style="background: linear-gradient(135deg, #667eea, #764ba2)">{{ formatarPreco(item.preco) }}</q-badge>
                     </div>
                   </div>
                 </q-img>
@@ -404,7 +677,7 @@
                   <div class="text-caption text-weight-bold lines-2">{{ item.titulo }}</div>
                   <div class="row items-center q-mt-xs">
                     <q-avatar size="16px" class="q-mr-xs">
-                      <img 
+                      <img
                         :src="item.explicador?.avatar || configs.urls?.avatar_explicador_padrao || 'https://cdn.quasar.dev/img/avatar3.jpg'"
                         @error="$event.target.src = configs.urls?.avatar_explicador_padrao || 'https://cdn.quasar.dev/img/avatar3.jpg'"
                       >
@@ -412,15 +685,16 @@
                     <span class="text-caption text-grey-7">{{ item.explicador?.nome || 'Explicador' }}</span>
                   </div>
                   <div class="row items-center q-mt-xs">
-                    <q-rating v-model="item.avaliacao" size="12px" :max="5" color="accent" readonly />
+                    <q-rating :value="item.avaliacao || 0" size="12px" :max="5" color="accent" readonly />
                     <span class="text-caption q-ml-xs">({{ item.avaliacoes || 0 }})</span>
                   </div>
-                  <q-btn 
-                    flat color="primary" 
-                    :label="configs.textos?.botoes?.comprar || 'Comprar'" 
-                    size="sm" 
-                    class="full-width q-mt-xs" 
-                    @click.stop="comprarConteudo(item)" 
+                  <q-btn
+                    flat
+                    :label="configs.textos?.botoes?.comprar || 'Comprar'"
+                    size="sm"
+                    class="full-width q-mt-xs"
+                    style="color: #667eea"
+                    @click.stop="comprarConteudo(item)"
                   />
                 </q-card-section>
               </q-card>
@@ -439,6 +713,8 @@
               icon-last="skip_next"
               icon-prev="chevron_left"
               icon-next="chevron_right"
+              color="primary"
+              style="--q-primary: #667eea"
             />
           </div>
         </q-page>
@@ -447,15 +723,15 @@
         <q-page v-if="tab === 'perfil'" class="q-pa-md">
           <div class="text-center q-mb-lg">
             <q-avatar size="100px" class="q-mb-sm cursor-pointer" @click="editarFoto">
-              <img 
-                :src="userAvatar" 
+              <img
+                :src="userAvatar"
                 @error="$event.target.src = configs.urls?.avatar_aluno_padrao || 'https://cdn.quasar.dev/img/avatar2.jpg'"
               >
-              <q-badge floating color="primary" rounded>
+              <q-badge floating color="primary" rounded style="background: linear-gradient(135deg, #667eea, #764ba2)">
                 <q-icon name="edit" size="12px" />
               </q-badge>
             </q-avatar>
-            <div class="text-h5 text-weight-bold">{{ userNome }}</div>
+            <div class="text-h5 text-weight-bold" style="color: #667eea">{{ userNome }}</div>
             <div class="text-subtitle2 text-grey-7">{{ userEmail }}</div>
             <div class="text-caption text-grey-7">{{ userTelefone || 'Telefone não informado' }}</div>
           </div>
@@ -465,7 +741,7 @@
             <div class="col-4">
               <q-card flat bordered>
                 <q-card-section class="text-center">
-                  <div class="text-h5 text-primary">{{ estatisticas.pedidos }}</div>
+                  <div class="text-h5" style="color: #667eea">{{ estatisticas.pedidos }}</div>
                   <div class="text-caption">{{ configs.textos?.pedidos || 'Pedidos' }}</div>
                 </q-card-section>
               </q-card>
@@ -473,7 +749,7 @@
             <div class="col-4">
               <q-card flat bordered>
                 <q-card-section class="text-center">
-                  <div class="text-h5 text-secondary">{{ estatisticas.sessoes }}</div>
+                  <div class="text-h5" style="color: #764ba2">{{ estatisticas.sessoes }}</div>
                   <div class="text-caption">{{ configs.textos?.sessoes || 'Sessões' }}</div>
                 </q-card-section>
               </q-card>
@@ -481,7 +757,7 @@
             <div class="col-4">
               <q-card flat bordered>
                 <q-card-section class="text-center">
-                  <div class="text-h5 text-accent">{{ estatisticas.conteudos }}</div>
+                  <div class="text-h5" style="color: #667eea">{{ estatisticas.conteudos }}</div>
                   <div class="text-caption">{{ configs.textos?.conteudos || 'Conteúdos' }}</div>
                 </q-card-section>
               </q-card>
@@ -491,28 +767,28 @@
           <!-- Informações Pessoais -->
           <q-card flat bordered class="q-mb-md">
             <q-card-section>
-              <div class="text-subtitle1 text-weight-bold q-mb-sm">{{ configs.textos?.informacoesPessoais || 'Informações Pessoais' }}</div>
-              
+              <div class="text-subtitle1 text-weight-bold q-mb-sm" style="color: #667eea">{{ configs.textos?.informacoesPessoais || 'Informações Pessoais' }}</div>
+
               <div class="row q-mb-sm">
                 <div class="col-4 text-grey-7">{{ configs.textos?.nome || 'Nome' }}:</div>
                 <div class="col-8 text-weight-bold">{{ userNome }}</div>
               </div>
-              
+
               <div class="row q-mb-sm">
                 <div class="col-4 text-grey-7">Email:</div>
                 <div class="col-8 text-weight-bold">{{ userEmail }}</div>
               </div>
-              
+
               <div class="row q-mb-sm">
                 <div class="col-4 text-grey-7">{{ configs.textos?.telefone || 'Telefone' }}:</div>
                 <div class="col-8 text-weight-bold">{{ userTelefone || '—' }}</div>
               </div>
-              
+
               <div class="row q-mb-sm">
                 <div class="col-4 text-grey-7">{{ configs.textos?.nivel || 'Nível' }}:</div>
                 <div class="col-8 text-weight-bold">{{ obterNomeNivel(userInfo?.nivel_id) || '—' }}</div>
               </div>
-              
+
               <div class="row">
                 <div class="col-4 text-grey-7">{{ configs.textos?.instituicao || 'Instituição' }}:</div>
                 <div class="col-8 text-weight-bold">{{ userInfo?.instituicao || '—' }}</div>
@@ -524,7 +800,7 @@
           <q-list bordered separator>
             <q-item clickable v-ripple @click="editarPerfil">
               <q-item-section avatar>
-                <q-icon name="edit" color="primary" />
+                <q-icon name="edit" style="color: #667eea" />
               </q-item-section>
               <q-item-section>{{ configs.textos?.menu?.editarPerfil || 'Editar Perfil' }}</q-item-section>
               <q-item-section side>
@@ -534,7 +810,7 @@
 
             <q-item clickable v-ripple @click="verMetodosPagamento">
               <q-item-section avatar>
-                <q-icon name="credit_card" color="secondary" />
+                <q-icon name="credit_card" style="color: #764ba2" />
               </q-item-section>
               <q-item-section>
                 <q-item-label>{{ configs.textos?.menu?.metodosPagamento || 'Métodos de Pagamento' }}</q-item-label>
@@ -581,7 +857,7 @@
     <!-- Diálogo Novo Pedido -->
     <q-dialog v-model="novoPedidoDialog" persistent maximized>
       <q-card>
-        <q-card-section class="bg-primary text-white">
+        <q-card-section class="bg-primary text-white" style="background: linear-gradient(135deg, #667eea, #764ba2) !important">
           <div class="row items-center justify-between">
             <div class="text-h6">{{ dialogos.novo_pedido.titulo }}</div>
             <q-btn flat round dense icon="close" v-close-popup />
@@ -701,10 +977,10 @@
 
           <!-- Seleção no Mapa (se prazo permitir) -->
           <div v-if="prazoSelecionado?.permite_mapa" class="q-mb-md">
-            <q-btn 
-              flat 
-              color="primary" 
-              :label="configs.textos?.botoes?.selecionarNoMapa || 'Selecionar no mapa'" 
+            <q-btn
+              flat
+              style="color: #667eea"
+              :label="configs.textos?.botoes?.selecionarNoMapa || 'Selecionar no mapa'"
               icon="map"
               class="full-width"
               @click="abrirMapaDialog = true"
@@ -750,10 +1026,12 @@
           />
 
           <!-- Urgente -->
-          <q-checkbox 
-            v-model="novoPedido.urgente" 
-            :label="configs.textos?.formulario?.urgente || 'É urgente?'" 
-            class="q-mb-md" 
+          <q-checkbox
+            v-model="novoPedido.urgente"
+            :label="configs.textos?.formulario?.urgente || 'É urgente?'"
+            class="q-mb-md"
+            color="primary"
+            style="--q-primary: #667eea"
           />
 
           <!-- Valor -->
@@ -773,13 +1051,14 @@
         </q-card-section>
 
         <q-card-actions align="right" class="q-pa-md">
-          <q-btn 
-            flat :label="dialogos.novo_pedido.botao_secundario_texto || 'Cancelar'" 
-            color="negative" v-close-popup 
+          <q-btn
+            flat :label="dialogos.novo_pedido.botao_secundario_texto || 'Cancelar'"
+            color="negative" v-close-popup
           />
-          <q-btn 
-            color="primary" 
-            :label="dialogos.novo_pedido.botao_principal_texto || 'Publicar'" 
+          <q-btn
+            style="background: linear-gradient(135deg, #667eea, #764ba2)"
+            text-color="white"
+            :label="dialogos.novo_pedido.botao_principal_texto || 'Publicar'"
             @click="criarPedido"
             :disable="!podePublicarPedido"
           />
@@ -790,7 +1069,7 @@
     <!-- Diálogo Mapa -->
     <q-dialog v-model="abrirMapaDialog" maximized>
       <q-card>
-        <q-card-section class="bg-primary text-white">
+        <q-card-section class="bg-primary text-white" style="background: linear-gradient(135deg, #667eea, #764ba2) !important">
           <div class="row items-center justify-between">
             <div class="text-h6">{{ dialogos.mapa.titulo }}</div>
             <q-btn flat round dense icon="close" v-close-popup />
@@ -803,10 +1082,10 @@
             <div class="text-center q-pa-xl">
               <q-icon name="map" size="64px" color="grey-4" />
               <p class="q-mt-md">Selecione sua localização no mapa</p>
-              <q-btn 
-                flat 
-                :label="configs.textos?.botoes?.usarLocalizacaoAtual || 'Usar minha localização atual'" 
-                color="primary" 
+              <q-btn
+                flat
+                :label="configs.textos?.botoes?.usarLocalizacaoAtual || 'Usar minha localização atual'"
+                style="color: #667eea"
                 icon="my_location"
                 class="q-mt-md"
                 @click="usarLocalizacaoAtual"
@@ -814,10 +1093,10 @@
             </div>
           </div>
           <div class="row q-mt-md">
-            <q-btn 
-              flat 
-              :label="dialogos.mapa.botao_principal_texto || 'Confirmar localização'" 
-              color="primary" 
+            <q-btn
+              flat
+              :label="dialogos.mapa.botao_principal_texto || 'Confirmar localização'"
+              style="background: linear-gradient(135deg, #667eea, #764ba2); color: white"
               class="full-width"
               @click="confirmarLocalizacaoMapa"
             />
@@ -829,7 +1108,7 @@
     <!-- Diálogo Detalhes do Pedido -->
     <q-dialog v-model="detalhesPedidoDialog" maximized>
       <q-card>
-        <q-card-section class="bg-primary text-white">
+        <q-card-section class="bg-primary text-white" style="background: linear-gradient(135deg, #667eea, #764ba2) !important">
           <div class="row items-center justify-between">
             <div class="text-h6">{{ dialogos.detalhes_pedido.titulo }}</div>
             <q-btn flat round dense icon="close" v-close-popup />
@@ -859,7 +1138,7 @@
                 <div class="col-6">Duração: {{ pedidoSelecionado.duracao }}</div>
                 <div class="col-6">Prazo: {{ obterNomePrazo(pedidoSelecionado.prazo_id) }}</div>
                 <div class="col-6">Local: {{ pedidoSelecionado.local }}</div>
-                <div class="col-12 text-primary text-weight-bold q-mt-md">
+                <div class="col-12 text-primary text-weight-bold q-mt-md" style="color: #667eea">
                   Valor: {{ formatarPreco(pedidoSelecionado.preco) }}
                 </div>
               </div>
@@ -890,9 +1169,9 @@
         </q-card-section>
 
         <q-card-actions align="right" class="q-pa-md">
-          <q-btn 
-            flat :label="dialogos.detalhes_pedido.botao_principal_texto || 'Fechar'" 
-            color="primary" v-close-popup 
+          <q-btn
+            flat :label="dialogos.detalhes_pedido.botao_principal_texto || 'Fechar'"
+            style="color: #667eea" v-close-popup
           />
         </q-card-actions>
       </q-card>
@@ -931,7 +1210,7 @@
 </template>
 
 <script>
-import { ref, reactive, computed, onMounted,watch  } from 'vue'
+import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import { useRouter } from 'vue-router'
 import Api from 'src/services/api.js'
@@ -945,7 +1224,7 @@ export default {
     const loading = ref(true)
     const tab = ref('pedidos')
     const menuPerfilAberto = ref(false)
-    
+
     // Diálogos estáticos (não vêm da API)
     const dialogos = {
       aceitar_proposta: {
@@ -1067,7 +1346,7 @@ export default {
     const confirmacaoIcone = ref('help')
     const acaoConfirmar = ref(null)
     const abrirMapaDialog = ref(false)
-    
+
     // Dados do usuário
     const user = ref(Api.AuthService.getUser() || {})
     const userNome = computed(() => user.value?.nome || 'Estudante')
@@ -1085,6 +1364,29 @@ export default {
       conteudos: 0
     })
 
+    // ===== NOVAS VARIÁVEIS PARA O DASHBOARD =====
+    const propostasDestaque = ref([])
+    const totalPropostasPendentes = computed(() => propostasDestaque.value.length)
+    const conteudosRelacionados = ref([])
+
+    // ===== NOVAS VARIÁVEIS PARA O BANNER =====
+    const bannerSlide = ref(1)
+    const promocoesAtivas = ref([])
+    const dicaDoDia = ref('Estude com flashcards para melhorar sua memória')
+
+    const mensagemInformativa = computed(() => {
+      const nome = userNome.value.split(' ')[0]
+      const pedidosPendentes = pedidos.value.filter(p => p.status === 'Em negociação').length
+
+      if (pedidosPendentes > 0) {
+        return `${nome}, você tem ${pedidosPendentes} proposta(s) aguardando sua resposta!`
+      } else if (bibliotecaCount.value === 0) {
+        return `${nome}, que tal explorar nossa loja e começar sua biblioteca de conteúdos?`
+      } else {
+        return `${nome}, continue seus estudos! Você já tem ${bibliotecaCount.value} itens na sua biblioteca.`
+      }
+    })
+
     // Pedidos
     const filtroPedidos = ref('todos')
     const filtrosPedidosOpcoes = computed(() => [
@@ -1092,7 +1394,7 @@ export default {
       { label: configs.value.textos?.filtros?.ativos || 'Ativos', value: 'ativos' },
       { label: configs.value.textos?.filtros?.concluidos || 'Concluídos', value: 'concluidos' }
     ])
-    
+
     const pedidos = ref([])
     const pedidosAtivos = computed(() => pedidos.value.filter(p => p.status !== 'Concluído').length)
     const pedidosFiltrados = computed(() => {
@@ -1108,7 +1410,7 @@ export default {
       { label: configs.value.textos?.filtros?.favoritos || 'Favoritos', value: 'favoritos' },
       { label: configs.value.textos?.filtros?.conteudos || 'Conteúdos', value: 'conteudos' }
     ])
-    
+
     const biblioteca = ref([])
     const bibliotecaCount = computed(() => biblioteca.value.length)
     const bibliotecaFiltrada = computed(() => {
@@ -1124,7 +1426,7 @@ export default {
     const ordenacaoConteudos = ref('recentes')
     const paginaAtual = ref(1)
     const totalPaginas = ref(1)
-    
+
     const opcoesOrdenacao = [
       { label: 'Mais recentes', value: 'recentes' },
       { label: 'Menor preço', value: 'menor_preco' },
@@ -1139,31 +1441,28 @@ export default {
       })
       return opcoes
     })
-    
+
     const conteudos = ref([])
     const conteudosFiltrados = computed(() => {
       let result = conteudos.value
-      
-      // Filtro por busca
+
       if (buscaConteudos.value) {
-        result = result.filter(c => 
+        result = result.filter(c =>
           c.titulo?.toLowerCase().includes(buscaConteudos.value.toLowerCase()) ||
           c.descricao?.toLowerCase().includes(buscaConteudos.value.toLowerCase())
         )
       }
-      
-      // Filtro por matéria
+
       if (filtroMateria.value !== 'todos') {
         result = result.filter(c => c.materia_id === filtroMateria.value)
       }
-      
+
       return result
     })
 
     const conteudosOrdenados = computed(() => {
       let result = [...conteudosFiltrados.value]
-      
-      // Ordenação
+
       if (ordenacaoConteudos.value === 'recentes') {
         result.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
       } else if (ordenacaoConteudos.value === 'menor_preco') {
@@ -1173,7 +1472,7 @@ export default {
       } else if (ordenacaoConteudos.value === 'avaliacao') {
         result.sort((a, b) => (b.avaliacao || 0) - (a.avaliacao || 0))
       }
-      
+
       return result
     })
 
@@ -1222,8 +1521,7 @@ export default {
       const opcoes = [
         { label: 'Online', value: 'online', icone: 'computer', tipo: 'online' }
       ]
-      
-      // Instituições de ensino
+
       configs.value.instituicoes?.forEach(inst => {
         opcoes.push({
           label: `Presencial - ${inst.nome}`,
@@ -1233,14 +1531,14 @@ export default {
           tipo: 'instituicao'
         })
       })
-      
-      opcoes.push({ 
-        label: configs.value.textos?.formulario?.outro || 'Outro', 
-        value: 'outro', 
+
+      opcoes.push({
+        label: configs.value.textos?.formulario?.outro || 'Outro',
+        value: 'outro',
         tipo: 'personalizado',
-        icone: 'add_location' 
+        icone: 'add_location'
       })
-      
+
       return opcoes
     })
 
@@ -1330,7 +1628,6 @@ export default {
           configs.value.mensagens = sistemaData.value.mensagens || {}
         }
 
-        // Buscar instituições próximas (se geolocalização disponível)
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(
             async (pos) => {
@@ -1360,12 +1657,15 @@ export default {
       loading.value = true
       try {
         await carregarConfiguracoes()
-        
+
         await Promise.all([
           carregarPedidos(),
           carregarBiblioteca(),
           carregarConteudos(),
-          carregarPerfil()
+          carregarPerfil(),
+          carregarPropostasDestaque(),
+          carregarConteudosRelacionados(),
+          carregarPromocoes()
         ])
       } catch (error) {
         mostrarErro(Api.handleError(error))
@@ -1424,6 +1724,99 @@ export default {
       }
     }
 
+    // ===== NOVAS FUNÇÕES PARA O DASHBOARD =====
+    const carregarPropostasDestaque = async () => {
+      try {
+        const pedidosComPropostas = pedidos.value.filter(p =>
+          p.propostas && p.propostas.length > 0 && p.status === 'Em negociação'
+        )
+
+        const propostas = []
+        pedidosComPropostas.forEach(p => {
+          p.propostas.forEach(prop => {
+            propostas.push({
+              ...prop,
+              pedido: p
+            })
+          })
+        })
+
+        propostasDestaque.value = propostas.slice(0, 3)
+      } catch (error) {
+        console.error('Erro ao carregar propostas:', error)
+        propostasDestaque.value = []
+      }
+    }
+
+    const carregarConteudosRelacionados = async () => {
+      try {
+        const nivelId = userInfo.value?.nivel_id
+        if (nivelId) {
+          const data = await Api.EstudanteService.getConteudos({
+            nivel: nivelId,
+            limit: 4
+          })
+          conteudosRelacionados.value = data.conteudos?.data?.slice(0, 4) || []
+        } else {
+          conteudosRelacionados.value = conteudos.value.slice(0, 4)
+        }
+      } catch (error) {
+        console.error('Erro ao carregar conteúdos relacionados:', error)
+        conteudosRelacionados.value = []
+      }
+    }
+
+    // ===== NOVAS FUNÇÕES PARA O BANNER =====
+    const carregarPromocoes = async () => {
+      try {
+        // Simular busca de promoções
+        // Na vida real, viria da API
+        promocoesAtivas.value = [
+          {
+            id: 1,
+            titulo: '50% off em Matemática',
+            descricao: 'Pacote completo de Matemática com 50% de desconto',
+            valor: 'de 2.500MT por 1.250MT',
+            tag: 'SUPER PROMOÇÃO',
+            imagem: 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80'
+          }
+        ]
+
+        // Se não houver promoções, deixa o array vazio
+        // promocoesAtivas.value = []
+      } catch (error) {
+        console.error('Erro ao carregar promoções:', error)
+        promocoesAtivas.value = []
+      }
+    }
+
+    const verPromocao = (promocao) => {
+      $q.dialog({
+        title: promocao.titulo,
+        message: promocao.descricao,
+        persistent: true
+      })
+    }
+
+    const usarPromocao = (promocao) => {
+      $q.notify({
+        type: 'positive',
+        message: 'Promoção aplicada com sucesso!',
+        icon: 'local_offer'
+      })
+    }
+
+    const recusarProposta = (propostaId) => {
+      $q.dialog({
+        title: 'Recusar proposta',
+        message: 'Deseja realmente recusar esta proposta?',
+        cancel: true,
+        persistent: true
+      }).onOk(async () => {
+        await carregarPropostasDestaque()
+      })
+    }
+
     // ===== PEDIDOS =====
     const criarPedido = async () => {
       if (!podePublicarPedido.value) return
@@ -1434,11 +1827,11 @@ export default {
           local: novoPedido.local === 'outro' ? novoPedido.local_personalizado : novoPedido.local
         }
         await Api.EstudanteService.criarPedido(pedidoData)
-        
+
         novoPedidoDialog.value = false
         await carregarPedidos()
-        
-        // Reset form
+        await carregarPropostasDestaque()
+
         Object.assign(novoPedido, {
           materia_id: '', titulo: '', descricao: '', tipo_servico_id: '',
           nivel_id: '', duracao: '', prazo_id: '', preco: 200, local: 'online',
@@ -1456,6 +1849,7 @@ export default {
           try {
             await Api.EstudanteService.aceitarProposta(propostaId)
             await carregarPedidos()
+            await carregarPropostasDestaque()
           } catch (error) {
             mostrarErro(Api.handleError(error))
           }
@@ -1465,7 +1859,7 @@ export default {
 
     const avaliarPedido = async (pedido) => {
       if (!pedido.avaliacaoTemp) return
-      
+
       try {
         await Api.EstudanteService.avaliarSessao(pedido.id, { nota: pedido.avaliacaoTemp })
         pedido.avaliado = true
@@ -1501,7 +1895,6 @@ export default {
         cancel: true,
         persistent: true
       }).onOk(() => {
-        // Abrir conteúdo
         $q.notify({
           type: 'info',
           message: 'Abrindo conteúdo...'
@@ -1560,7 +1953,7 @@ export default {
 
     const filtrarInstituicoes = async (val, update) => {
       if (val.length < 3) return
-      
+
       try {
         const data = await Api.get('/instituicoes/busca', {
           params: { q: val }
@@ -1622,7 +2015,7 @@ export default {
 
     const editarPerfil = () => {
       $q.dialog({
-        title: dialogos.editarPerfil?.titulo || 'Editar Perfil',
+        title: 'Editar Perfil',
         prompt: {
           model: user.value.nome,
           label: configs.value.textos?.formulario?.nome || 'Nome completo'
@@ -1712,7 +2105,6 @@ export default {
 
     const confirmarLocalizacaoMapa = () => {
       abrirMapaDialog.value = false
-      // TODO: Processar localização selecionada no mapa
       $q.notify({
         type: 'positive',
         message: 'Localização selecionada com sucesso!'
@@ -1765,12 +2157,10 @@ export default {
       return cores[status] || 'grey'
     }
 
-    // Watch para recarregar conteúdos quando filtros mudarem
     const recarregarConteudos = () => {
       carregarConteudos()
     }
 
-    // Watches
     watch(buscaConteudos, () => {
       paginaAtual.value = 1
       recarregarConteudos()
@@ -1803,25 +2193,38 @@ export default {
       saldo,
       notificacoesNaoLidas,
       estatisticas,
-      
+
       // Configurações
       configs,
       dialogos,
-      
+
+      // Dashboard
+      propostasDestaque,
+      totalPropostasPendentes,
+      conteudosRelacionados,
+
+      // Banner
+      bannerSlide,
+      promocoesAtivas,
+      dicaDoDia,
+      mensagemInformativa,
+      verPromocao,
+      usarPromocao,
+
       // Pedidos
       filtroPedidos,
       filtrosPedidosOpcoes,
       pedidos,
       pedidosAtivos,
       pedidosFiltrados,
-      
+
       // Biblioteca
       filtroBiblioteca,
       filtrosBibliotecaOpcoes,
       biblioteca,
       bibliotecaCount,
       bibliotecaFiltrada,
-      
+
       // Loja
       buscaConteudos,
       filtroMateria,
@@ -1833,7 +2236,7 @@ export default {
       conteudos,
       conteudosFiltrados,
       conteudosOrdenados,
-      
+
       // Opções
       materiasOpcoes,
       tiposServicoOpcoes,
@@ -1842,7 +2245,7 @@ export default {
       prazosOpcoes,
       locaisOpcoes,
       prazoSelecionado,
-      
+
       // Diálogos
       novoPedidoDialog,
       detalhesPedidoDialog,
@@ -1857,13 +2260,13 @@ export default {
       confirmacaoCor,
       confirmacaoIcone,
       abrirMapaDialog,
-      
+
       // Funções auxiliares
       obterNomeMateria,
       obterNomeNivel,
       obterNomeTipoServico,
       obterNomePrazo,
-      
+
       // Métodos
       abrirMenuPerfil,
       irParaPerfil,
@@ -1871,6 +2274,7 @@ export default {
       carregarDados,
       criarPedido,
       aceitarProposta,
+      recusarProposta,
       avaliarPedido,
       verDetalhesPedido,
       toggleFavorito,
@@ -1891,7 +2295,7 @@ export default {
       confirmarLocalizacaoMapa,
       confirmarAcao,
       mostrarErro,
-      
+
       // Utilitários
       formatarPreco,
       formatarData,
@@ -1916,15 +2320,147 @@ export default {
   background-color: #E8F5E9;
 }
 
-.biblioteca-card, .conteudo-card {
+.proposta-card,
+.biblioteca-card,
+.conteudo-card {
   border-radius: 12px;
   transition: all 0.2s ease;
   cursor: pointer;
 }
 
-.biblioteca-card:hover, .conteudo-card:hover {
+.proposta-card:hover,
+.biblioteca-card:hover,
+.conteudo-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+}
+
+.banner-promocional {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 24px;
+  overflow: hidden;
+}
+
+.banner-promocional:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 30px -10px rgba(102, 126, 234, 0.4);
+}
+
+.banner-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 100%);
+}
+
+.banner-conteudo {
+  padding: 24px;
+}
+
+.banner-tag {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+
+.banner-titulo {
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 8px;
+}
+
+.banner-descricao {
+  font-size: 14px;
+  color: rgba(255,255,255,0.9);
+  margin-bottom: 16px;
+}
+
+.banner-acoes {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.banner-valor {
+  font-size: 18px;
+  font-weight: 700;
+  color: white;
+}
+
+.banner-btn {
+  border-radius: 20px;
+  padding: 4px 16px;
+}
+
+.banner-informativo {
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 20px 30px -10px rgba(102, 126, 234, 0.3);
+}
+
+.banner-info {
+  padding: 24px;
+  position: relative;
+  z-index: 1;
+}
+
+.banner-info-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.banner-info-titulo {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.banner-info-texto {
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  text-align: center;
+}
+
+.stat-number {
+  display: block;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.stat-label {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.banner-info-dicas {
+  background: rgba(255,255,255,0.2);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.dica-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.banner-ilustracao {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
 }
 
 .lines-2 {
@@ -1948,5 +2484,23 @@ export default {
   height: 300px;
   background: #f5f5f5;
   border-radius: 8px;
+}
+
+@media (max-width: 640px) {
+  .banner-info-titulo {
+    font-size: 22px;
+  }
+
+  .banner-info-texto {
+    font-size: 14px;
+  }
+
+  .stat-number {
+    font-size: 20px;
+  }
+
+  .banner-ilustracao img {
+    max-height: 150px;
+  }
 }
 </style>

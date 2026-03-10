@@ -1,11 +1,11 @@
 <template>
   <q-layout view="hHh LpR fFf">
     <!-- Header -->
-    <q-header elevated class="bg-primary text-white">
+    <q-header elevated class="bg-primary text-white" style="background: linear-gradient(135deg, #667eea, #764ba2) !important">
       <q-toolbar>
         <q-avatar>
-          <img 
-            :src="userAvatar" 
+          <img
+            :src="userAvatar"
             @error="$event.target.src = 'https://cdn.quasar.dev/img/avatar3.jpg'"
           >
         </q-avatar>
@@ -15,12 +15,13 @@
         </q-toolbar-title>
 
         <!-- Saldo -->
-        <q-chip 
-          dense 
-          class="bg-white text-primary q-mr-sm cursor-pointer" 
+        <q-chip
+          dense
+          class="bg-white text-primary q-mr-sm cursor-pointer"
+          style="color: #667eea !important"
           @click="verExtrato"
         >
-          <q-avatar icon="account_balance_wallet" color="primary" text-color="white" />
+          <q-avatar icon="account_balance_wallet" color="primary" text-color="white" style="background: linear-gradient(135deg, #667eea, #764ba2)" />
           {{ formatarPreco(saldo) }}
         </q-chip>
 
@@ -32,13 +33,14 @@
 
     <!-- Navegação Inferior -->
     <q-footer class="bg-white text-dark">
-      <q-tabs 
-        v-model="tab" 
-        dense 
-        class="text-grey-7" 
-        active-color="primary" 
-        indicator-color="primary" 
+      <q-tabs
+        v-model="tab"
+        dense
+        class="text-grey-7"
+        active-color="primary"
+        indicator-color="primary"
         align="justify"
+        style="--q-primary: #667eea"
       >
         <q-tab name="disponiveis" icon="search">
           <span class="tab-label">Disponíveis</span>
@@ -70,7 +72,7 @@
     <q-page-container>
       <!-- Loading State -->
       <div v-if="loading" class="loading-container">
-        <q-spinner color="primary" size="3em" />
+        <q-spinner color="primary" size="3em" style="color: #667eea !important" />
         <p class="q-mt-md text-grey-7">Carregando seus dados...</p>
       </div>
 
@@ -78,7 +80,7 @@
       <div v-else-if="error" class="error-container">
         <q-icon name="error_outline" size="64px" color="negative" />
         <p class="text-h6 q-mt-md">{{ error }}</p>
-        <q-btn color="primary" label="Tentar novamente" @click="carregarDados" class="q-mt-md" />
+        <q-btn color="primary" label="Tentar novamente" @click="carregarDados" class="q-mt-md" style="background: linear-gradient(135deg, #667eea, #764ba2)" />
       </div>
 
       <!-- Conteúdo -->
@@ -90,7 +92,7 @@
             <div class="col-4">
               <q-card flat bordered>
                 <q-card-section class="text-center q-pa-sm">
-                  <div class="text-h6 text-primary">{{ stats.pedidosHoje }}</div>
+                  <div class="text-h6" style="color: #667eea">{{ stats.pedidosHoje }}</div>
                   <div class="text-caption">Hoje</div>
                 </q-card-section>
               </q-card>
@@ -98,7 +100,7 @@
             <div class="col-4">
               <q-card flat bordered>
                 <q-card-section class="text-center q-pa-sm">
-                  <div class="text-h6 text-secondary">{{ stats.pedidosSemana }}</div>
+                  <div class="text-h6" style="color: #764ba2">{{ stats.pedidosSemana }}</div>
                   <div class="text-caption">Semana</div>
                 </q-card-section>
               </q-card>
@@ -123,6 +125,7 @@
               class="filter-chip cursor-pointer"
               clickable
               @click="filtroDisponivel = filtro.value"
+              :style="filtroDisponivel === filtro.value ? 'background: linear-gradient(135deg, #667eea, #764ba2) !important' : ''"
             >
               {{ filtro.label }}
             </q-chip>
@@ -138,10 +141,10 @@
             debounce="300"
           >
             <template v-slot:prepend>
-              <q-icon name="search" />
+              <q-icon name="search" style="color: #667eea" />
             </template>
             <template v-slot:append>
-              <q-icon v-if="buscaDisponiveis" name="close" class="cursor-pointer" @click="buscaDisponiveis = ''" />
+              <q-icon v-if="buscaDisponiveis" name="close" class="cursor-pointer" @click="buscaDisponiveis = ''" style="color: #667eea" />
             </template>
           </q-input>
 
@@ -160,7 +163,7 @@
                   <div class="row items-center justify-between">
                     <div class="row items-center">
                       <q-avatar size="40px" class="q-mr-sm">
-                        <img 
+                        <img
                           :src="pedido.estudante?.avatar || 'https://cdn.quasar.dev/img/avatar2.jpg'"
                           @error="$event.target.src = 'https://cdn.quasar.dev/img/avatar2.jpg'"
                         >
@@ -180,16 +183,16 @@
 
                   <!-- Tags -->
                   <div class="row q-mt-sm">
-                    <q-chip size="sm" outline color="primary" class="q-mr-xs">
-                      <q-avatar icon="school" color="primary" size="14px" />
+                    <q-chip size="sm" outline color="primary" class="q-mr-xs" style="color: #667eea; border-color: #667eea">
+                      <q-avatar icon="school" color="primary" size="14px" style="color: #667eea" />
                       {{ pedido.materia || 'Matéria' }}
                     </q-chip>
-                    <q-chip size="sm" outline color="secondary" class="q-mr-xs">
-                      <q-avatar icon="schedule" color="secondary" size="14px" />
+                    <q-chip size="sm" outline color="secondary" class="q-mr-xs" style="color: #764ba2; border-color: #764ba2">
+                      <q-avatar icon="schedule" color="secondary" size="14px" style="color: #764ba2" />
                       {{ pedido.duracao || '60 min' }}
                     </q-chip>
-                    <q-chip size="sm" outline color="accent">
-                      <q-avatar icon="location_on" color="accent" size="14px" />
+                    <q-chip size="sm" outline color="accent" style="color: #667eea; border-color: #667eea">
+                      <q-avatar icon="location_on" color="accent" size="14px" style="color: #667eea" />
                       {{ pedido.local || 'Online' }}
                     </q-chip>
                   </div>
@@ -201,35 +204,35 @@
                   <div class="row items-center justify-between q-mt-md">
                     <div>
                       <span class="text-grey-7 text-caption">Oferece:</span>
-                      <span class="text-primary text-weight-bold q-ml-sm">{{ formatarPreco(pedido.preco) }}</span>
+                      <span class="text-weight-bold q-ml-sm" style="color: #667eea">{{ formatarPreco(pedido.preco) }}</span>
                     </div>
                     <div class="row">
-                      <q-btn 
-                        flat 
-                        round 
-                        color="negative" 
-                        icon="close" 
-                        size="sm" 
+                      <q-btn
+                        flat
+                        round
+                        color="negative"
+                        icon="close"
+                        size="sm"
                         @click="recusarPedido(pedido)"
                       >
                         <q-tooltip>Recusar pedido</q-tooltip>
                       </q-btn>
-                      <q-btn 
-                        flat 
-                        round 
-                        color="warning" 
-                        icon="payments" 
-                        size="sm" 
+                      <q-btn
+                        flat
+                        round
+                        color="warning"
+                        icon="payments"
+                        size="sm"
                         @click="abrirNegociacao(pedido)"
                       >
                         <q-tooltip>Fazer contraproposta</q-tooltip>
                       </q-btn>
-                      <q-btn 
-                        flat 
-                        round 
-                        color="positive" 
-                        icon="check" 
-                        size="sm" 
+                      <q-btn
+                        flat
+                        round
+                        color="positive"
+                        icon="check"
+                        size="sm"
                         @click="aceitarPedido(pedido)"
                       >
                         <q-tooltip>Aceitar pedido</q-tooltip>
@@ -258,7 +261,7 @@
                   <div class="row items-center justify-between">
                     <div class="row items-center">
                       <q-avatar size="40px" class="q-mr-sm">
-                        <img 
+                        <img
                           :src="proposta.estudante?.avatar || 'https://cdn.quasar.dev/img/avatar2.jpg'"
                           @error="$event.target.src = 'https://cdn.quasar.dev/img/avatar2.jpg'"
                         >
@@ -278,12 +281,12 @@
 
                   <!-- Tags -->
                   <div class="row q-mt-sm">
-                    <q-chip size="sm" outline color="primary" class="q-mr-xs">
-                      <q-avatar icon="school" color="primary" size="14px" />
+                    <q-chip size="sm" outline color="primary" class="q-mr-xs" style="color: #667eea; border-color: #667eea">
+                      <q-avatar icon="school" color="primary" size="14px" style="color: #667eea" />
                       {{ proposta.materia || 'Matéria' }}
                     </q-chip>
-                    <q-chip size="sm" outline color="secondary" class="q-mr-xs">
-                      <q-avatar icon="schedule" color="secondary" size="14px" />
+                    <q-chip size="sm" outline color="secondary" class="q-mr-xs" style="color: #764ba2; border-color: #764ba2">
+                      <q-avatar icon="schedule" color="secondary" size="14px" style="color: #764ba2" />
                       {{ proposta.duracao || '60 min' }}
                     </q-chip>
                     <q-chip v-if="proposta.urgente" size="sm" color="negative" text-color="white">
@@ -296,7 +299,7 @@
                     <div class="row items-center justify-between">
                       <div>
                         <span class="text-caption text-grey-7">Sua proposta:</span>
-                        <span class="text-primary text-weight-bold text-h6 q-ml-sm">{{ formatarPreco(proposta.proposta_valor) }}</span>
+                        <span class="text-weight-bold text-h6 q-ml-sm" style="color: #667eea">{{ formatarPreco(proposta.proposta_valor) }}</span>
                       </div>
                       <div>
                         <span class="text-caption text-grey-7">Original:</span>
@@ -316,11 +319,11 @@
 
                   <!-- Ações -->
                   <div class="row items-center justify-end q-mt-md">
-                    <q-btn 
-                      flat 
-                      color="negative" 
-                      label="Cancelar proposta" 
-                      size="sm" 
+                    <q-btn
+                      flat
+                      color="negative"
+                      label="Cancelar proposta"
+                      size="sm"
                       @click="cancelarProposta(proposta)"
                     />
                   </div>
@@ -346,7 +349,7 @@
                   <div class="row items-center justify-between">
                     <div class="row items-center">
                       <q-avatar size="40px" class="q-mr-sm">
-                        <img 
+                        <img
                           :src="pedido.estudante?.avatar || 'https://cdn.quasar.dev/img/avatar2.jpg'"
                           @error="$event.target.src = 'https://cdn.quasar.dev/img/avatar2.jpg'"
                         >
@@ -366,12 +369,12 @@
 
                   <!-- Tags -->
                   <div class="row q-mt-sm">
-                    <q-chip size="sm" outline color="primary" class="q-mr-xs">
-                      <q-avatar icon="school" color="primary" size="14px" />
+                    <q-chip size="sm" outline color="primary" class="q-mr-xs" style="color: #667eea; border-color: #667eea">
+                      <q-avatar icon="school" color="primary" size="14px" style="color: #667eea" />
                       {{ pedido.materia || 'Matéria' }}
                     </q-chip>
-                    <q-chip size="sm" outline color="secondary" class="q-mr-xs">
-                      <q-avatar icon="schedule" color="secondary" size="14px" />
+                    <q-chip size="sm" outline color="secondary" class="q-mr-xs" style="color: #764ba2; border-color: #764ba2">
+                      <q-avatar icon="schedule" color="secondary" size="14px" style="color: #764ba2" />
                       {{ pedido.duracao || '60 min' }}
                     </q-chip>
                   </div>
@@ -380,7 +383,7 @@
                   <div class="q-mt-md bg-positive-light q-pa-md rounded-borders">
                     <div class="row items-center justify-between">
                       <span class="text-caption text-weight-bold">Valor combinado:</span>
-                      <span class="text-primary text-weight-bold text-h6">{{ formatarPreco(pedido.preco_combinado || pedido.preco) }}</span>
+                      <span class="text-weight-bold text-h6" style="color: #667eea">{{ formatarPreco(pedido.preco_combinado || pedido.preco) }}</span>
                     </div>
                   </div>
 
@@ -400,32 +403,32 @@
                   <!-- Botões Ação -->
                   <div class="row q-mt-md q-col-gutter-sm">
                     <div class="col-4">
-                      <q-btn 
-                        flat 
-                        label="Iniciar" 
-                        color="positive" 
-                        icon="play_circle" 
-                        class="full-width" 
+                      <q-btn
+                        flat
+                        label="Iniciar"
+                        color="positive"
+                        icon="play_circle"
+                        class="full-width"
                         @click="iniciarSessao(pedido)"
                       />
                     </div>
                     <div class="col-4">
-                      <q-btn 
-                        flat 
-                        label="Chat" 
-                        color="primary" 
-                        icon="chat" 
-                        class="full-width" 
+                      <q-btn
+                        flat
+                        label="Chat"
+                        color="primary"
+                        icon="chat"
+                        class="full-width"
                         @click="abrirChat(pedido.estudante)"
                       />
                     </div>
                     <div class="col-4">
-                      <q-btn 
-                        flat 
-                        label="Agendar" 
-                        color="secondary" 
-                        icon="event" 
-                        class="full-width" 
+                      <q-btn
+                        flat
+                        label="Agendar"
+                        color="secondary"
+                        icon="event"
+                        class="full-width"
                         @click="abrirAgendamento(pedido)"
                       />
                     </div>
@@ -433,12 +436,12 @@
 
                   <!-- Botão concluir -->
                   <div class="row q-mt-sm">
-                    <q-btn 
-                      flat 
-                      label="Marcar como concluído" 
-                      color="grey" 
-                      icon="check" 
-                      class="full-width" 
+                    <q-btn
+                      flat
+                      label="Marcar como concluído"
+                      color="grey"
+                      icon="check"
+                      class="full-width"
                       @click="concluirPedido(pedido)"
                     />
                   </div>
@@ -463,7 +466,7 @@
                   <div class="row items-center justify-between">
                     <div class="row items-center">
                       <q-avatar size="40px" class="q-mr-sm">
-                        <img 
+                        <img
                           :src="pedido.estudante?.avatar || 'https://cdn.quasar.dev/img/avatar2.jpg'"
                           @error="$event.target.src = 'https://cdn.quasar.dev/img/avatar2.jpg'"
                         >
@@ -493,7 +496,7 @@
                   <!-- Botão publicar conteúdo -->
                   <q-btn
                     flat
-                    color="primary"
+                    style="color: #667eea"
                     label="Publicar como conteúdo pago"
                     icon="upload"
                     class="full-width q-mt-md"
@@ -512,7 +515,7 @@
             <div class="col-4">
               <q-card flat bordered>
                 <q-card-section class="text-center q-pa-sm">
-                  <div class="text-h6 text-primary">{{ meusConteudos.length }}</div>
+                  <div class="text-h6" style="color: #667eea">{{ meusConteudos.length }}</div>
                   <div class="text-caption">Total</div>
                 </q-card-section>
               </q-card>
@@ -520,7 +523,7 @@
             <div class="col-4">
               <q-card flat bordered>
                 <q-card-section class="text-center q-pa-sm">
-                  <div class="text-h6 text-secondary">{{ totalVendas }}</div>
+                  <div class="text-h6" style="color: #764ba2">{{ totalVendas }}</div>
                   <div class="text-caption">Vendas</div>
                 </q-card-section>
               </q-card>
@@ -543,6 +546,7 @@
               icon="add"
               unelevated
               class="full-width"
+              style="background: linear-gradient(135deg, #667eea, #764ba2)"
               @click="publicarConteudoDialog = true"
             />
           </div>
@@ -560,6 +564,7 @@
               spread
               unelevated
               dense
+              style="--q-primary: #667eea"
             />
           </div>
 
@@ -567,13 +572,13 @@
           <div v-if="meusConteudosFiltrados.length === 0" class="empty-state">
             <q-icon name="menu_book" size="64px" color="grey-4" />
             <p class="text-h6 text-grey-7 q-mt-md">Nenhum conteúdo publicado</p>
-            <q-btn color="primary" label="Publicar agora" class="q-mt-md" @click="publicarConteudoDialog = true" />
+            <q-btn color="primary" label="Publicar agora" class="q-mt-md" style="background: linear-gradient(135deg, #667eea, #764ba2)" @click="publicarConteudoDialog = true" />
           </div>
 
           <div class="row q-col-gutter-md">
-            <div 
-              v-for="conteudo in meusConteudosFiltrados" 
-              :key="conteudo.id" 
+            <div
+              v-for="conteudo in meusConteudosFiltrados"
+              :key="conteudo.id"
               class="col-12 col-sm-6 col-md-4"
             >
               <q-card flat bordered class="conteudo-card">
@@ -589,7 +594,7 @@
                   </div>
                   <div class="absolute-bottom bg-transparent">
                     <div class="row items-center justify-end">
-                      <q-badge color="primary" class="q-pa-xs">
+                      <q-badge style="background: linear-gradient(135deg, #667eea, #764ba2)" class="q-pa-xs">
                         {{ formatarPreco(conteudo.preco) }}
                       </q-badge>
                     </div>
@@ -598,7 +603,7 @@
 
                 <q-card-section>
                   <div class="text-subtitle2 text-weight-bold lines-2">{{ conteudo.titulo }}</div>
-                  
+
                   <div class="row items-center q-mt-xs">
                     <q-icon name="star" color="accent" size="16px" />
                     <span class="text-caption q-ml-xs">{{ conteudo.avaliacao_media || 0 }}</span>
@@ -618,18 +623,18 @@
 
                   <div class="row q-mt-sm q-col-gutter-xs">
                     <div class="col-6">
-                      <q-btn 
-                        flat 
-                        color="primary" 
-                        icon="edit" 
-                        label="Editar" 
-                        size="sm" 
+                      <q-btn
+                        flat
+                        style="color: #667eea"
+                        icon="edit"
+                        label="Editar"
+                        size="sm"
                         class="full-width"
                         @click="editarConteudo(conteudo)"
                       />
                     </div>
                     <div class="col-6">
-                      <q-btn 
+                      <q-btn
                         flat
                         :color="conteudo.status === 'Ativo' ? 'negative' : 'positive'"
                         :icon="conteudo.status === 'Ativo' ? 'pause' : 'play_arrow'"
@@ -651,13 +656,13 @@
           <!-- Foto e Nome -->
           <div class="text-center q-mb-lg">
             <q-avatar size="100px" class="q-mb-sm">
-              <img 
-                :src="userAvatar" 
+              <img
+                :src="userAvatar"
                 @error="$event.target.src = 'https://cdn.quasar.dev/img/avatar3.jpg'"
               >
               <q-badge floating color="positive" rounded />
             </q-avatar>
-            <div class="text-h4 text-weight-bold">{{ userNome }}</div>
+            <div class="text-h4 text-weight-bold" style="color: #667eea">{{ userNome }}</div>
             <div class="text-subtitle1 text-grey-7">{{ userEmail }}</div>
             <div class="text-caption text-grey-7">{{ userTelefone || 'Telefone não informado' }}</div>
 
@@ -672,7 +677,7 @@
             <div class="col-4">
               <q-card flat bordered>
                 <q-card-section class="text-center">
-                  <div class="text-h4 text-primary">{{ userInfo.sessoes_realizadas || 0 }}</div>
+                  <div class="text-h4" style="color: #667eea">{{ userInfo.sessoes_realizadas || 0 }}</div>
                   <div class="text-caption">Sessões</div>
                 </q-card-section>
               </q-card>
@@ -680,7 +685,7 @@
             <div class="col-4">
               <q-card flat bordered>
                 <q-card-section class="text-center">
-                  <div class="text-h4 text-secondary">{{ userInfo.estudantes_atendidos || 0 }}</div>
+                  <div class="text-h4" style="color: #764ba2">{{ userInfo.estudantes_atendidos || 0 }}</div>
                   <div class="text-caption">Alunos</div>
                 </q-card-section>
               </q-card>
@@ -699,7 +704,7 @@
           <q-list bordered separator class="q-mb-lg">
             <q-item>
               <q-item-section avatar>
-                <q-icon name="school" color="primary" />
+                <q-icon name="school" style="color: #667eea" />
               </q-item-section>
               <q-item-section>
                 <q-item-label>Especialidades</q-item-label>
@@ -709,7 +714,7 @@
 
             <q-item>
               <q-item-section avatar>
-                <q-icon name="attach_money" color="positive" />
+                <q-icon name="attach_money" style="color: #667eea" />
               </q-item-section>
               <q-item-section>
                 <q-item-label>Preço médio</q-item-label>
@@ -742,7 +747,7 @@
           <q-list bordered separator>
             <q-item clickable v-ripple @click="editarPerfil">
               <q-item-section avatar>
-                <q-icon name="edit" color="primary" />
+                <q-icon name="edit" style="color: #667eea" />
               </q-item-section>
               <q-item-section>Editar Perfil</q-item-section>
               <q-item-section side>
@@ -752,7 +757,7 @@
 
             <q-item clickable v-ripple @click="verMetodosPagamento">
               <q-item-section avatar>
-                <q-icon name="credit_card" color="secondary" />
+                <q-icon name="credit_card" style="color: #764ba2" />
               </q-item-section>
               <q-item-section>
                 <q-item-label>Métodos de Pagamento</q-item-label>
@@ -809,7 +814,7 @@
       <q-btn
         fab
         icon="more_horiz"
-        color="primary"
+        style="background: linear-gradient(135deg, #667eea, #764ba2)"
         @click="fabMenu = !fabMenu"
         class="q-elevation-4"
       >
@@ -822,13 +827,13 @@
           <q-list style="min-width: 200px">
             <q-item clickable v-close-popup @click="publicarConteudoDialog = true">
               <q-item-section avatar>
-                <q-icon name="upload" color="primary" />
+                <q-icon name="upload" style="color: #667eea" />
               </q-item-section>
               <q-item-section>Publicar conteúdo</q-item-section>
             </q-item>
             <q-item clickable v-close-popup @click="verExtrato">
               <q-item-section avatar>
-                <q-icon name="account_balance_wallet" color="secondary" />
+                <q-icon name="account_balance_wallet" style="color: #667eea" />
               </q-item-section>
               <q-item-section>Ver extrato</q-item-section>
             </q-item>
@@ -857,16 +862,16 @@
     <!-- Modal Negociação -->
     <q-dialog v-model="negociacaoDialog" full-width>
       <q-card>
-        <q-card-section class="bg-primary text-white">
+        <q-card-section class="text-white" style="background: linear-gradient(135deg, #667eea, #764ba2)">
           <div class="text-h6">Fazer Contraproposta</div>
         </q-card-section>
 
         <q-card-section>
           <div class="text-subtitle2 q-mb-md">Pedido: {{ pedidoNegociacao?.titulo || 'Pedido' }}</div>
-          
+
           <div class="row items-center justify-between q-mb-md bg-grey-2 q-pa-md rounded-borders">
             <span class="text-grey-7">Valor oferecido:</span>
-            <span class="text-weight-bold text-h6">{{ formatarPreco(pedidoNegociacao?.preco) }}</span>
+            <span class="text-weight-bold text-h6" style="color: #667eea">{{ formatarPreco(pedidoNegociacao?.preco) }}</span>
           </div>
 
           <q-input
@@ -891,10 +896,11 @@
 
         <q-card-actions align="right" class="q-pa-md">
           <q-btn flat label="Cancelar" color="negative" v-close-popup />
-          <q-btn 
-            color="primary" 
-            label="Enviar proposta" 
-            @click="enviarProposta" 
+          <q-btn
+            style="background: linear-gradient(135deg, #667eea, #764ba2)"
+            text-color="white"
+            label="Enviar proposta"
+            @click="enviarProposta"
             :loading="propostaEnviando"
             :disable="!proposta.valor || proposta.valor <= 0"
           />
@@ -905,7 +911,7 @@
     <!-- Modal Chat -->
     <q-dialog v-model="chatDialog" full-width>
       <q-card>
-        <q-card-section class="bg-primary text-white">
+        <q-card-section class="text-white" style="background: linear-gradient(135deg, #667eea, #764ba2)">
           <div class="row items-center justify-between">
             <div class="row items-center">
               <q-avatar size="32px" class="q-mr-sm">
@@ -949,7 +955,7 @@
               @keyup.enter="enviarMensagem"
             >
               <template v-slot:append>
-                <q-btn flat round icon="send" color="primary" @click="enviarMensagem" />
+                <q-btn flat round icon="send" style="color: #667eea" @click="enviarMensagem" />
               </template>
             </q-input>
           </div>
@@ -960,7 +966,7 @@
     <!-- Modal Agendamento -->
     <q-dialog v-model="agendamentoDialog" full-width>
       <q-card>
-        <q-card-section class="bg-primary text-white">
+        <q-card-section class="text-white" style="background: linear-gradient(135deg, #667eea, #764ba2)">
           <div class="text-h6">Agendar Sessão</div>
         </q-card-section>
 
@@ -999,10 +1005,11 @@
 
         <q-card-actions align="right" class="q-pa-md">
           <q-btn flat label="Cancelar" color="negative" v-close-popup />
-          <q-btn 
-            color="primary" 
-            label="Confirmar agendamento" 
-            @click="confirmarAgendamento" 
+          <q-btn
+            style="background: linear-gradient(135deg, #667eea, #764ba2)"
+            text-color="white"
+            label="Confirmar agendamento"
+            @click="confirmarAgendamento"
             :loading="agendamentoEnviando"
             :disable="!agendamento.data || !agendamento.hora"
           />
@@ -1013,7 +1020,7 @@
     <!-- Modal Publicar Conteúdo -->
     <q-dialog v-model="publicarConteudoDialog" full-width>
       <q-card>
-        <q-card-section class="bg-primary text-white">
+        <q-card-section class="text-white" style="background: linear-gradient(135deg, #667eea, #764ba2)">
           <div class="text-h6">Publicar Novo Conteúdo</div>
         </q-card-section>
 
@@ -1084,11 +1091,12 @@
 
         <q-card-actions align="right" class="q-pa-md">
           <q-btn flat label="Cancelar" color="negative" v-close-popup />
-          <q-btn 
-            color="primary" 
-            label="Publicar conteúdo" 
-            @click="publicarConteudo" 
-            :loading="publicando" 
+          <q-btn
+            style="background: linear-gradient(135deg, #667eea, #764ba2)"
+            text-color="white"
+            label="Publicar conteúdo"
+            @click="publicarConteudo"
+            :loading="publicando"
             :disable="!podePublicar"
           />
         </q-card-actions>
@@ -1098,13 +1106,13 @@
     <!-- Modal Estatísticas -->
     <q-dialog v-model="estatisticasDialog" full-width>
       <q-card>
-        <q-card-section class="bg-primary text-white">
+        <q-card-section class="text-white" style="background: linear-gradient(135deg, #667eea, #764ba2)">
           <div class="text-h6">Estatísticas Detalhadas</div>
         </q-card-section>
 
         <q-card-section>
           <div class="text-center q-mb-lg">
-            <div class="text-h4 text-primary">{{ userInfo.sessoes_realizadas || 0 }}</div>
+            <div class="text-h4" style="color: #667eea">{{ userInfo.sessoes_realizadas || 0 }}</div>
             <div class="text-caption">Total de sessões</div>
           </div>
 
@@ -1112,7 +1120,7 @@
             <div class="col-6">
               <q-card flat bordered>
                 <q-card-section class="text-center">
-                  <div class="text-h5 text-secondary">{{ userInfo.estudantes_atendidos || 0 }}</div>
+                  <div class="text-h5" style="color: #764ba2">{{ userInfo.estudantes_atendidos || 0 }}</div>
                   <div class="text-caption">Estudantes únicos</div>
                 </q-card-section>
               </q-card>
@@ -1153,12 +1161,12 @@
     <!-- Modal Saque -->
     <q-dialog v-model="saqueDialog" full-width>
       <q-card>
-        <q-card-section class="bg-primary text-white">
+        <q-card-section class="text-white" style="background: linear-gradient(135deg, #667eea, #764ba2)">
           <div class="text-h6">Solicitar Saque</div>
         </q-card-section>
 
         <q-card-section>
-          <div class="text-subtitle2 q-mb-md">Saldo disponível: {{ formatarPreco(saldo) }}</div>
+          <div class="text-subtitle2 q-mb-md">Saldo disponível: <span style="color: #667eea">{{ formatarPreco(saldo) }}</span></div>
 
           <q-input
             v-model="saque.valor"
@@ -1189,10 +1197,11 @@
 
         <q-card-actions align="right" class="q-pa-md">
           <q-btn flat label="Cancelar" color="negative" v-close-popup />
-          <q-btn 
-            color="primary" 
-            label="Solicitar" 
-            @click="confirmarSaque" 
+          <q-btn
+            style="background: linear-gradient(135deg, #667eea, #764ba2)"
+            text-color="white"
+            label="Solicitar"
+            @click="confirmarSaque"
             :loading="saqueEnviando"
             :disable="!podeSacar"
           />
@@ -1290,7 +1299,7 @@ export default {
     const pedidosDisponiveisFiltrados = computed(() => {
       const lista = pedidosDisponiveis.value || []
       if (lista.length === 0) return []
-      
+
       let result = [...lista]
 
       if (buscaDisponiveis.value) {
@@ -1372,7 +1381,7 @@ export default {
     const materiasOptions = ['Matemática', 'Física', 'Química', 'Português', 'Biologia', 'História', 'Geografia']
     const niveisOptions = ['8ª Classe', '9ª Classe', '10ª Classe', '11ª Classe', '12ª Classe', 'Ensino Superior']
     const horariosDisponiveis = ['08:00', '09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00']
-    
+
     const datasDisponiveis = computed(() => {
       const hoje = new Date()
       return Array.from({ length: 7 }, (_, i) => {
@@ -1420,7 +1429,7 @@ export default {
           carregarMeusConteudos(),
           carregarGanhos()
         ])
-        
+
       } catch (err) {
         console.error('Erro ao carregar dados:', err)
         error.value = 'Não foi possível carregar os dados'
@@ -1468,11 +1477,11 @@ export default {
       try {
         const data = await Api.ExplicadorService.getMeusPedidos()
         const todosPedidos = data.pedidos?.data || data.pedidos || []
-        
-        pedidosAtivos.value = todosPedidos.filter(p => 
+
+        pedidosAtivos.value = todosPedidos.filter(p =>
           ['Aceito', 'Em andamento'].includes(p?.status)
         )
-        pedidosConcluidos.value = todosPedidos.filter(p => 
+        pedidosConcluidos.value = todosPedidos.filter(p =>
           p?.status === 'Concluído'
         )
 
@@ -1509,7 +1518,7 @@ export default {
         mostrarErro('Pedido inválido')
         return
       }
-      
+
       $q.dialog({
         title: 'Confirmar',
         message: `Deseja aceitar o pedido "${pedido.titulo}" por ${formatarPreco(pedido.preco)}?`,
@@ -1519,7 +1528,7 @@ export default {
         try {
           await Api.ExplicadorService.aceitarPedido(pedido.id)
           await Promise.all([
-            carregarPedidosDisponiveis(), 
+            carregarPedidosDisponiveis(),
             carregarMeusPedidos()
           ])
           tab.value = 'ativos'
@@ -1535,7 +1544,7 @@ export default {
         mostrarErro('Pedido inválido')
         return
       }
-      
+
       $q.dialog({
         title: 'Confirmar',
         message: 'Deseja recusar este pedido?',
@@ -1593,7 +1602,7 @@ export default {
 
     const cancelarProposta = async (proposta) => {
       if (!proposta || !proposta.id) return
-      
+
       $q.dialog({
         title: 'Confirmar',
         message: 'Deseja cancelar esta proposta?',
@@ -1612,7 +1621,7 @@ export default {
 
     const iniciarSessao = async (pedido) => {
       if (!pedido || !pedido.id) return
-      
+
       $q.dialog({
         title: 'Iniciar Sessão',
         message: `Escolha a plataforma:`,
@@ -1640,7 +1649,7 @@ export default {
 
     const concluirPedido = async (pedido) => {
       if (!pedido || !pedido.id) return
-      
+
       $q.dialog({
         title: 'Confirmar',
         message: 'Deseja marcar como concluído?',
@@ -1700,7 +1709,7 @@ export default {
     // ===== AÇÕES DE CONTEÚDO =====
     const prepararPublicacao = (pedido) => {
       if (!pedido) return
-      
+
       novoConteudo.titulo = `Solução: ${pedido.titulo || 'Pedido'}`
       novoConteudo.materia = pedido.materia || 'Matemática'
       novoConteudo.descricao = `Material baseado na sessão com ${pedido.estudante?.nome || 'estudante'}.`
@@ -1725,7 +1734,7 @@ export default {
 
         publicarConteudoDialog.value = false
         await carregarMeusConteudos()
-        
+
         Object.assign(novoConteudo, {
           titulo: '', materia: '', nivel: [], descricao: '', arquivo: null, preco: 75
         })
@@ -1740,7 +1749,7 @@ export default {
 
     const editarConteudo = (conteudo) => {
       if (!conteudo) return
-      
+
       $q.dialog({
         title: 'Editar Conteúdo',
         prompt: {
@@ -1763,7 +1772,7 @@ export default {
 
     const toggleConteudoStatus = async (conteudo) => {
       if (!conteudo) return
-      
+
       try {
         await Api.ExplicadorService.toggleConteudoStatus(conteudo.id)
         conteudo.status = conteudo.status === 'Ativo' ? 'Inativo' : 'Ativo'
@@ -1783,7 +1792,7 @@ export default {
           title: 'Extrato de Saldo',
           message: `
             <div class="text-center q-mb-md">
-              <div class="text-h4 text-primary">${formatarPreco(saldo.value)}</div>
+              <div class="text-h4" style="color: #667eea">${formatarPreco(saldo.value)}</div>
               <div class="text-caption">Saldo disponível</div>
             </div>
             <div class="text-weight-bold q-mb-sm">Últimas movimentações:</div>
@@ -1840,7 +1849,7 @@ export default {
     // ===== OUTRAS AÇÕES =====
     const abrirChat = (estudante) => {
       if (!estudante) return
-      
+
       chatDestinatario.value = {
         nome: estudante.nome || 'Estudante',
         avatar: estudante.avatar || 'https://cdn.quasar.dev/img/avatar2.jpg'
@@ -2163,16 +2172,16 @@ export default {
   .conteudo-card {
     border-radius: 12px;
   }
-  
+
   .filters-container {
     gap: 4px;
   }
-  
+
   .filter-chip {
     font-size: 12px;
     padding: 0 8px;
   }
-  
+
   .tab-label {
     font-size: 10px;
   }
