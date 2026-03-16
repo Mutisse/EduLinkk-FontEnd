@@ -6,7 +6,7 @@
         <div class="header">
           <div class="header-container">
             <div class="header-left">
-              <div class="logo-wrapper">
+              <div class="logo-wrapper" @click="irParaHome">
                 <span class="material-icons logo-icon">school</span>
                 <span class="logo-text">EduLink</span>
               </div>
@@ -14,15 +14,20 @@
 
             <!-- Menu Desktop -->
             <div class="header-menu desktop-only">
-              <a href="#" @click.prevent>Para Estudantes</a>
-              <a href="#" @click.prevent>Para Explicadores</a>
-              <a href="#" @click.prevent>Preços</a>
-              <a href="#" @click.prevent>Sobre</a>
+              <span class="menu-text">Para Estudantes</span>
+              <span class="menu-text">Para Explicadores</span>
+              <a href="#" @click.prevent="scrollToPrecos">Preços</a>
+              <router-link to="/sobre">Sobre</router-link>
             </div>
 
             <div class="header-right">
               <q-btn flat label="Entrar" class="login-btn-header" @click="irParaLogin" />
-              <q-btn outline label="Criar conta" class="register-btn-header" @click="irParaRegistro" />
+              <q-btn
+                outline
+                label="Criar conta"
+                class="register-btn-header"
+                @click="irParaRegistro"
+              />
 
               <!-- Menu Mobile -->
               <q-btn flat round dense icon="menu" class="mobile-only" @click="mobileMenu = true" />
@@ -40,23 +45,59 @@
             </div>
             <q-list>
               <q-item clickable v-close-popup>
-                <q-item-section>Para Estudantes</q-item-section>
+                <q-item-section avatar>
+                  <q-icon name="people" color="primary" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>Para Estudantes</q-item-label>
+                </q-item-section>
               </q-item>
+
               <q-item clickable v-close-popup>
-                <q-item-section>Para Explicadores</q-item-section>
+                <q-item-section avatar>
+                  <q-icon name="school" color="secondary" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>Para Explicadores</q-item-label>
+                </q-item-section>
               </q-item>
-              <q-item clickable v-close-popup>
-                <q-item-section>Preços</q-item-section>
+
+              <q-item clickable v-close-popup @click="scrollToPrecos">
+                <q-item-section avatar>
+                  <q-icon name="attach_money" color="green" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>Preços</q-item-label>
+                </q-item-section>
               </q-item>
-              <q-item clickable v-close-popup>
-                <q-item-section>Sobre</q-item-section>
+
+              <q-item clickable v-close-popup to="/sobre">
+                <q-item-section avatar>
+                  <q-icon name="info" color="blue" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>Sobre</q-item-label>
+                </q-item-section>
               </q-item>
-              <q-separator />
+
+              <q-separator spaced />
+
               <q-item clickable v-close-popup @click="irParaLogin">
-                <q-item-section>Entrar</q-item-section>
+                <q-item-section avatar>
+                  <q-icon name="login" color="primary" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>Entrar</q-item-label>
+                </q-item-section>
               </q-item>
+
               <q-item clickable v-close-popup @click="irParaRegistro">
-                <q-item-section>Criar conta</q-item-section>
+                <q-item-section avatar>
+                  <q-icon name="person_add" color="secondary" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>Criar conta</q-item-label>
+                </q-item-section>
               </q-item>
             </q-list>
           </div>
@@ -88,8 +129,8 @@
               </h1>
 
               <p class="hero-subtitle">
-                Conectamos você a explicadores qualificados para aulas particulares,
-                materiais didáticos e muito mais. Tudo online e adaptado ao seu ritmo.
+                Conectamos você a explicadores qualificados para aulas particulares, materiais
+                didáticos e muito mais. Tudo online e adaptado ao seu ritmo.
               </p>
 
               <div class="hero-actions">
@@ -133,7 +174,11 @@
 
             <div class="hero-image">
               <div class="image-container">
-                <img src="https://i.pinimg.com/originals/a4/31/32/a43132e257a903a5191b031446efae2d.jpg" alt="EduLink Hero" class="main-illustration" />
+                <img
+                  src="https://i.pinimg.com/originals/a4/31/32/a43132e257a903a5191b031446efae2d.jpg"
+                  alt="EduLink Hero"
+                  class="main-illustration"
+                />
 
                 <!-- Cards flutuantes -->
                 <div class="floating-card card1">
@@ -165,7 +210,10 @@
                   <span class="material-icons">verified</span>
                 </div>
                 <h3>Explicadores Verificados</h3>
-                <p>Todos os profissionais passam por rigoroso processo de seleção e validação de documentos</p>
+                <p>
+                  Todos os profissionais passam por rigoroso processo de seleção e validação de
+                  documentos
+                </p>
               </div>
 
               <div class="benefit-card">
@@ -194,38 +242,23 @@
             </div>
           </div>
 
-          <!-- Seção de Planos - CORRIGIDA PARA MOBILE -->
-          <div class="plans-section">
+          <!-- Seção de Planos (PREÇOS) -->
+          <div class="plans-section" ref="precosSection">
             <h2 class="section-title">
               Escolha o plano ideal para
               <span class="gradient-text">você</span>
             </h2>
 
-            <!-- Versão Mobile - Cards em Slide -->
+            <!-- Versão Mobile - Cards em Slide com SCROLL LIVRE -->
             <div class="mobile-carousel">
-              <!-- Indicadores de slide -->
-              <div class="carousel-indicators">
-                <span
-                  v-for="(_, index) in planos"
-                  :key="index"
-                  class="indicator"
-                  :class="{ active: planoAtual === index }"
-                  @click="planoAtual = index"
-                ></span>
-              </div>
-
-              <!-- Cards com scroll horizontal -->
+              <!-- Cards com scroll horizontal LIVRE -->
               <div class="cards-scroll">
                 <div
                   class="cards-container"
                   ref="planosContainer"
                   @scroll="handlePlanosScroll"
                 >
-                  <div
-                    v-for="(plano, index) in planos"
-                    :key="index"
-                    class="plan-card-item"
-                  >
+                  <div v-for="(plano, index) in planos" :key="index" class="plan-card-item">
                     <div class="plan-card" :class="{ popular: plano.popular }">
                       <div class="popular-tag" v-if="plano.popular">MAIS ESCOLHIDO</div>
                       <div class="plan-header">
@@ -254,11 +287,26 @@
                   </div>
                 </div>
               </div>
+
+              <!-- Indicadores de slide (apenas visuais) -->
+              <div class="carousel-indicators">
+                <span
+                  v-for="(_, index) in planos"
+                  :key="index"
+                  class="indicator"
+                  :class="{ active: planoAtual === index }"
+                ></span>
+              </div>
             </div>
 
             <!-- Versão Desktop - Grid -->
-            <div class="plans-grid desktop-only">
-              <div v-for="(plano, index) in planos" :key="index" class="plan-card" :class="{ popular: plano.popular }">
+            <div class="plans-grid">
+              <div
+                v-for="(plano, index) in planos"
+                :key="index"
+                class="plan-card"
+                :class="{ popular: plano.popular }"
+              >
                 <div class="popular-tag" v-if="plano.popular">MAIS ESCOLHIDO</div>
                 <div class="plan-header">
                   <h3>{{ plano.nome }}</h3>
@@ -286,27 +334,16 @@
             </div>
           </div>
 
-          <!-- Seção de Depoimentos - CORRIGIDA PARA MOBILE -->
+          <!-- Seção de Depoimentos -->
           <div class="testimonials-section">
             <h2 class="section-title">
               O que nossos
               <span class="gradient-text">alunos</span> dizem
             </h2>
 
-            <!-- Versão Mobile - Cards em Slide -->
+            <!-- Versão Mobile - Cards em Slide com SCROLL LIVRE -->
             <div class="mobile-carousel">
-              <!-- Indicadores de slide -->
-              <div class="carousel-indicators">
-                <span
-                  v-for="(_, index) in depoimentos"
-                  :key="index"
-                  class="indicator"
-                  :class="{ active: depoimentoAtual === index }"
-                  @click="depoimentoAtual = index"
-                ></span>
-              </div>
-
-              <!-- Cards com scroll horizontal -->
+              <!-- Cards com scroll horizontal LIVRE -->
               <div class="cards-scroll">
                 <div
                   class="cards-container"
@@ -337,11 +374,21 @@
                   </div>
                 </div>
               </div>
+
+              <!-- Indicadores de slide (apenas visuais) -->
+              <div class="carousel-indicators">
+                <span
+                  v-for="(_, index) in depoimentos"
+                  :key="index"
+                  class="indicator"
+                  :class="{ active: depoimentoAtual === index }"
+                ></span>
+              </div>
             </div>
 
             <!-- Versão Desktop - Grid -->
-            <div class="testimonials-grid desktop-only">
-              <div v-for="(depoimento, index) in depoimentos.slice(0, 3)" :key="index" class="testimonial-card">
+            <div class="testimonials-grid">
+              <div v-for="(depoimento, index) in depoimentos" :key="index" class="testimonial-card">
                 <div class="testimonial-header">
                   <q-avatar size="56px" class="avatar">
                     <img :src="depoimento.avatar" />
@@ -417,9 +464,9 @@
                 <div class="footer-col">
                   <h4>Produto</h4>
                   <ul>
-                    <li><a href="#">Para Estudantes</a></li>
-                    <li><a href="#">Para Explicadores</a></li>
-                    <li><a href="#">Preços</a></li>
+                    <li><span class="footer-text">Para Estudantes</span></li>
+                    <li><span class="footer-text">Para Explicadores</span></li>
+                    <li><a href="#" @click.prevent="scrollToPrecos">Preços</a></li>
                     <li><a href="#">FAQ</a></li>
                   </ul>
                 </div>
@@ -427,7 +474,7 @@
                 <div class="footer-col">
                   <h4>Empresa</h4>
                   <ul>
-                    <li><a href="#">Sobre nós</a></li>
+                    <li><router-link to="/sobre">Sobre nós</router-link></li>
                     <li><a href="#">Carreiras</a></li>
                     <li><a href="#">Blog</a></li>
                     <li><a href="#">Imprensa</a></li>
@@ -470,6 +517,20 @@ const planoAtual = ref(0)
 const depoimentoAtual = ref(0)
 const planosContainer = ref(null)
 const depoimentosContainer = ref(null)
+const precosSection = ref(null)
+
+// Função para scroll até a seção de preços
+const scrollToPrecos = () => {
+  mobileMenu.value = false
+  if (precosSection.value) {
+    precosSection.value.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+}
+
+// Função para voltar à home
+const irParaHome = () => {
+  router.push('/')
+}
 
 // Dados dos planos
 const planos = ref([
@@ -481,11 +542,7 @@ const planos = ref([
     period: null,
     popular: false,
     buttonText: 'Experimentar',
-    features: [
-      '1 aula experimental',
-      'Acesso a 3 materiais',
-      'Suporte básico'
-    ]
+    features: ['1 aula experimental', 'Acesso a 3 materiais', 'Suporte básico'],
   },
   {
     nome: 'Premium',
@@ -499,8 +556,8 @@ const planos = ref([
       'Aulas ilimitadas',
       'Biblioteca completa',
       'Suporte prioritário',
-      'Certificado de conclusão'
-    ]
+      'Certificado de conclusão',
+    ],
   },
   {
     nome: 'Básico',
@@ -510,12 +567,8 @@ const planos = ref([
     period: '/mês',
     popular: false,
     buttonText: 'Começar',
-    features: [
-      '5 aulas por mês',
-      '10 materiais',
-      'Suporte por email'
-    ]
-  }
+    features: ['5 aulas por mês', '10 materiais', 'Suporte por email'],
+  },
 ])
 
 // Dados dos depoimentos
@@ -524,26 +577,29 @@ const depoimentos = ref([
     nome: 'Maria Silva',
     avatar: 'https://i.pravatar.cc/150?img=1',
     rating: 5,
-    texto: 'Consegui melhorar minhas notas em Matemática graças ao EduLink. Os explicadores são muito atenciosos e pacientes!'
+    texto:
+      'Consegui melhorar minhas notas em Matemática graças ao EduLink. Os explicadores são muito atenciosos e pacientes!',
   },
   {
     nome: 'João Pedro',
     avatar: 'https://i.pravatar.cc/150?img=2',
     rating: 4,
-    texto: 'Plataforma excelente! Conteúdos de qualidade e preço justo. Recomendo a todos que querem aprender de verdade.'
+    texto:
+      'Plataforma excelente! Conteúdos de qualidade e preço justo. Recomendo a todos que querem aprender de verdade.',
   },
   {
     nome: 'Ana Oliveira',
     avatar: 'https://i.pravatar.cc/150?img=3',
     rating: 5,
-    texto: 'Meu filho adorou as aulas de Física. Os explicadores sabem como motivar e tornar o aprendizado divertido.'
+    texto:
+      'Meu filho adorou as aulas de Física. Os explicadores sabem como motivar e tornar o aprendizado divertido.',
   },
   {
     nome: 'Carlos Mendes',
     avatar: 'https://i.pravatar.cc/150?img=4',
     rating: 5,
-    texto: 'Consegui passar no exame de admissão graças às aulas preparatórias. Muito obrigado!'
-  }
+    texto: 'Consegui passar no exame de admissão graças às aulas preparatórias. Muito obrigado!',
+  },
 ])
 
 // Handlers para scroll dos planos
@@ -558,51 +614,37 @@ const handlePlanosScroll = () => {
   }
 }
 
-// Handlers para scroll dos depoimentos
 const handleDepoimentosScroll = () => {
   if (depoimentosContainer.value) {
     const scrollLeft = depoimentosContainer.value.scrollLeft
     const cardWidth = depoimentosContainer.value.offsetWidth
     const newIndex = Math.round(scrollLeft / cardWidth)
-    if (newIndex !== depoimentoAtual.value && newIndex >= 0 && newIndex < depoimentos.value.length) {
+    if (
+      newIndex !== depoimentoAtual.value &&
+      newIndex >= 0 &&
+      newIndex < depoimentos.value.length
+    ) {
       depoimentoAtual.value = newIndex
     }
   }
 }
 
-// Função para rolar para o card selecionado
-const scrollParaCard = (container, index) => {
-  if (container) {
-    const cardWidth = container.offsetWidth
-    container.scrollTo({
-      left: index * cardWidth,
-      behavior: 'smooth'
-    })
-  }
-}
-
-// Watch para atualizar o scroll quando o índice mudar
-const updatePlanoScroll = () => {
-  scrollParaCard(planosContainer.value, planoAtual.value)
-}
-
-const updateDepoimentoScroll = () => {
-  scrollParaCard(depoimentosContainer.value, depoimentoAtual.value)
-}
-
-// Detectar resize para mobile/desktop
-const isMobile = ref(window.innerWidth <= 640)
-
-const checkMobile = () => {
-  isMobile.value = window.innerWidth <= 640
-}
-
 onMounted(() => {
-  window.addEventListener('resize', checkMobile)
+  if (planosContainer.value) {
+    planosContainer.value.addEventListener('scroll', handlePlanosScroll)
+  }
+  if (depoimentosContainer.value) {
+    depoimentosContainer.value.addEventListener('scroll', handleDepoimentosScroll)
+  }
 })
 
 onBeforeUnmount(() => {
-  window.removeEventListener('resize', checkMobile)
+  if (planosContainer.value) {
+    planosContainer.value.removeEventListener('scroll', handlePlanosScroll)
+  }
+  if (depoimentosContainer.value) {
+    depoimentosContainer.value.removeEventListener('scroll', handleDepoimentosScroll)
+  }
 })
 
 const irParaLogin = () => {
@@ -622,26 +664,32 @@ $gradient: linear-gradient(135deg, $primary 0%, $secondary 100%);
 $text-dark: #1a202c;
 $text-light: #4a5568;
 
+// Breakpoints
+$mobile-max: 640px;
+$tablet-min: 641px;
+$tablet-max: 1024px;
+$desktop-min: 1025px;
+
 // Mixins responsivos
 @mixin mobile {
-  @media (max-width: 640px) {
+  @media (max-width: $mobile-max) {
     @content;
   }
 }
 
 @mixin tablet {
-  @media (min-width: 641px) and (max-width: 1024px) {
+  @media (min-width: $tablet-min) and (max-width: $tablet-max) {
     @content;
   }
 }
 
 @mixin desktop {
-  @media (min-width: 1025px) {
+  @media (min-width: $desktop-min) {
     @content;
   }
 }
 
-// Classes de responsividade
+// Classes de visibilidade
 .desktop-only {
   @include mobile {
     display: none !important;
@@ -655,17 +703,30 @@ $text-light: #4a5568;
   @include desktop {
     display: none !important;
   }
-  @include tablet {
-    display: none !important;
-  }
 }
 
+// Mobile Carousel - Aparece APENAS em mobile
 .mobile-carousel {
+  display: block;
+
+  @include tablet {
+    display: none;
+  }
   @include desktop {
     display: none;
   }
+}
+
+// Grids - Aparecem APENAS em desktop/tablet
+.plans-grid,
+.testimonials-grid {
+  display: none;
+
   @include tablet {
-    display: none;
+    display: grid;
+  }
+  @include desktop {
+    display: grid;
   }
 }
 
@@ -705,6 +766,7 @@ $text-light: #4a5568;
     display: flex;
     align-items: center;
     gap: 8px;
+    cursor: pointer;
   }
 
   .logo-icon {
@@ -730,13 +792,24 @@ $text-light: #4a5568;
 .header-menu {
   display: flex;
   gap: 32px;
+  align-items: center;
 
-  a {
+  .menu-text {
+    color: $text-dark;
+    font-weight: 500;
+    font-size: 15px;
+    cursor: default;
+    opacity: 0.8;
+  }
+
+  a,
+  .router-link-active {
     color: $text-dark;
     text-decoration: none;
     font-weight: 500;
     font-size: 15px;
     transition: color 0.3s;
+    cursor: pointer;
 
     &:hover {
       color: $primary;
@@ -836,9 +909,16 @@ $text-light: #4a5568;
 }
 
 @keyframes float {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(100px, -100px) scale(1.1); }
-  66% { transform: translate(-50px, 50px) scale(0.9); }
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(100px, -100px) scale(1.1);
+  }
+  66% {
+    transform: translate(-50px, 50px) scale(0.9);
+  }
 }
 
 // Conteúdo principal
@@ -982,9 +1062,15 @@ $text-light: #4a5568;
 }
 
 @keyframes pulseBtn {
-  0% { box-shadow: 0 0 0 0 rgba($primary, 0.7); }
-  70% { box-shadow: 0 0 0 20px rgba($primary, 0); }
-  100% { box-shadow: 0 0 0 0 rgba($primary, 0); }
+  0% {
+    box-shadow: 0 0 0 0 rgba($primary, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 20px rgba($primary, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba($primary, 0);
+  }
 }
 
 .hero-stats {
@@ -1046,11 +1132,18 @@ $text-light: #4a5568;
   width: 100%;
   height: auto;
   animation: floatImage 6s infinite ease-in-out;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
 
 @keyframes floatImage {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-20px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
 }
 
 .floating-card {
@@ -1058,7 +1151,7 @@ $text-light: #4a5568;
   background: white;
   padding: 12px 20px;
   border-radius: 40px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -1087,11 +1180,40 @@ $text-light: #4a5568;
     right: -5%;
     animation-delay: 1s;
   }
+
+  @include mobile {
+    padding: 8px 12px;
+    font-size: 12px;
+
+    .material-icons {
+      font-size: 16px;
+    }
+
+    &.card1 {
+      top: 5%;
+      right: -5%;
+    }
+
+    &.card2 {
+      bottom: 10%;
+      left: -5%;
+    }
+
+    &.card3 {
+      top: 40%;
+      right: -2%;
+    }
+  }
 }
 
 @keyframes floatCard {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 // Seção de Benefícios
@@ -1137,7 +1259,7 @@ $text-light: #4a5568;
   background: white;
   padding: 30px;
   border-radius: 24px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
   border: 1px solid #f0f0f0;
   transition: all 0.3s;
 
@@ -1202,41 +1324,19 @@ $text-light: #4a5568;
   line-height: 1.6;
 }
 
-// Seção de Planos - MOBILE
+// Seção de Planos
 .plans-section {
   max-width: 1280px;
   margin: 0 auto;
   padding: 80px 24px;
+  scroll-margin-top: 100px;
 
   @include mobile {
     padding: 60px 16px;
   }
 }
 
-// Indicadores do Carrossel
-.carousel-indicators {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  margin-bottom: 20px;
-}
-
-.indicator {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: rgba($primary, 0.3);
-  cursor: pointer;
-  transition: all 0.3s;
-
-  &.active {
-    width: 24px;
-    border-radius: 4px;
-    background: $primary;
-  }
-}
-
-// Cards com scroll horizontal
+// Cards com scroll horizontal LIVRE
 .cards-scroll {
   width: 100%;
   overflow: hidden;
@@ -1246,10 +1346,16 @@ $text-light: #4a5568;
 .cards-container {
   display: flex;
   overflow-x: auto;
-  scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
   scroll-behavior: smooth;
-  gap: 0;
+  gap: 16px;
+  padding: 10px 0 20px;
+  cursor: grab;
+  user-select: none;
+
+  &:active {
+    cursor: grabbing;
+  }
 
   &::-webkit-scrollbar {
     display: none;
@@ -1257,35 +1363,79 @@ $text-light: #4a5568;
 }
 
 .plan-card-item {
-  flex: 0 0 100%;
+  flex: 0 0 85%;
   scroll-snap-align: start;
-  padding: 0 16px;
+  padding: 0 8px;
   box-sizing: border-box;
+
+  @include mobile {
+    flex: 0 0 90%;
+  }
 }
 
 .testimonial-card-item {
-  flex: 0 0 100%;
+  flex: 0 0 85%;
   scroll-snap-align: start;
-  padding: 0 16px;
+  padding: 0 8px;
   box-sizing: border-box;
+
+  @include mobile {
+    flex: 0 0 90%;
+  }
 }
 
-// Planos Grid (Desktop)
+// Indicadores do Carrossel (apenas visuais)
+.carousel-indicators {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding-bottom: 10px;
+}
+
+.indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba($primary, 0.3);
+  transition: all 0.3s;
+  display: inline-block;
+
+  &.active {
+    width: 24px;
+    border-radius: 4px;
+    background: $gradient;
+  }
+}
+
+// Planos Grid (Desktop/Tablet)
 .plans-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 30px;
+  display: none;
+
+  @include tablet {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  @include desktop {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+  }
 }
 
 .plan-card {
   background: white;
   border-radius: 32px;
   padding: 40px 30px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
   border: 1px solid #f0f0f0;
   position: relative;
   transition: all 0.3s;
   height: 100%;
+  display: flex;
+  flex-direction: column;
 
   &:hover {
     transform: translateY(-5px);
@@ -1297,13 +1447,14 @@ $text-light: #4a5568;
     color: white;
     transform: scale(1.05);
     border: none;
+    z-index: 2;
 
     .plan-header h3,
     .plan-header p,
     .price,
     .old-price,
     .period,
-    .plan-features li span {
+    .plan-features li {
       color: white;
     }
 
@@ -1311,14 +1462,16 @@ $text-light: #4a5568;
       color: white;
     }
 
-    .popular-btn {
+    .plan-btn.popular-btn {
       background: white;
       color: $primary;
+      border: none;
     }
   }
 
   @include mobile {
     padding: 30px 20px;
+    transform: none !important;
 
     h3 {
       font-size: 22px;
@@ -1345,6 +1498,7 @@ $text-light: #4a5568;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 1px;
+  z-index: 3;
 
   @include mobile {
     right: 20px;
@@ -1398,6 +1552,7 @@ $text-light: #4a5568;
   list-style: none;
   padding: 0;
   margin: 0 0 30px;
+  flex: 1;
 
   li {
     display: flex;
@@ -1410,6 +1565,7 @@ $text-light: #4a5568;
     .check {
       color: #48bb78;
       font-size: 20px;
+      flex-shrink: 0;
     }
   }
 }
@@ -1420,10 +1576,12 @@ $text-light: #4a5568;
   border-radius: 25px;
   font-weight: 600;
   font-size: 16px;
+  margin-top: auto;
 
   &.popular-btn {
     background: white;
     color: $primary;
+    border: 2px solid $primary;
   }
 
   @include mobile {
@@ -1443,14 +1601,20 @@ $text-light: #4a5568;
   }
 }
 
-// Grid de Depoimentos (Desktop)
+// Grid de Depoimentos (Desktop/Tablet)
 .testimonials-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 30px;
+  display: none;
 
   @include tablet {
+    display: grid;
     grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  @include desktop {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
   }
 }
 
@@ -1458,9 +1622,11 @@ $text-light: #4a5568;
   background: white;
   padding: 30px;
   border-radius: 24px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
   border: 1px solid #f0f0f0;
   height: 100%;
+  display: flex;
+  flex-direction: column;
 
   @include mobile {
     padding: 25px 20px;
@@ -1476,6 +1642,7 @@ $text-light: #4a5568;
 
 .avatar {
   border: 3px solid $primary;
+  flex-shrink: 0;
 
   @include mobile {
     width: 48px !important;
@@ -1516,6 +1683,7 @@ $text-light: #4a5568;
   line-height: 1.6;
   margin: 0;
   font-style: italic;
+  flex: 1;
 
   @include mobile {
     font-size: 14px;
@@ -1685,6 +1853,16 @@ $text-light: #4a5568;
         }
       }
     }
+  }
+}
+
+.footer-text {
+  color: #a0aec0;
+  cursor: default;
+  font-size: 14px;
+
+  &:hover {
+    color: #a0aec0;
   }
 }
 
