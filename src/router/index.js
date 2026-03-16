@@ -7,7 +7,19 @@ import {
 } from 'vue-router'
 import routes from './routes'
 
-export default defineRouter(function (/* { store, ssrContext } */) {
+// Configuração de debug - mude para false em produção
+const DEBUG = process.env.NODE_ENV === 'development'
+
+// Logger condicional
+const log = {
+  info: (...args) => DEBUG && console.log('🔷', ...args),
+  success: (...args) => DEBUG && console.log('✅', ...args),
+  warn: (...args) => DEBUG && console.warn('⚠️', ...args),
+  error: (...args) => DEBUG && console.error('❌', ...args),
+  auth: (...args) => DEBUG && console.log('🔐', ...args),
+}
+
+export default defineRouter(function () {
   const createHistory = process.env.SERVER
     ? createMemoryHistory
     : process.env.VUE_ROUTER_MODE === 'history'
@@ -20,88 +32,85 @@ export default defineRouter(function (/* { store, ssrContext } */) {
     history: createHistory(process.env.VUE_ROUTER_BASE),
   })
 
-  // Guard de navegação - Versão corrigida
+  // Guard de navegação - Versão otimizada
   Router.beforeEach(async (to, from) => {
-    console.log('📍 Navegando para:', to.path)
+    // Evitar loop na mesma página
+    if (to.path === from.path) {
+      return true
+    }
+
+    log.info('Navegando para:', to.path)
 
     try {
-      // Tenta importar o serviço de autenticação
+      // Carregar serviço de autenticação
       let authService
       try {
         const apiModule = await import('../services/api.js')
         authService = apiModule.default?.AuthService
-        console.log('✅ AuthService carregado:', !!authService)
-      } catch (importError) {
-        console.warn('⚠️ AuthService não disponível:', importError.message)
-        return true
-      }
 
-      if (!authService) {
-        console.log('➡️ Continuando sem autenticação')
+        if (!authService) {
+          log.warn('AuthService não disponível')
+          return true
+        }
+
+        log.success('AuthService carregado')
+      } catch (error) {
+        log.error('Falha ao carregar AuthService:', error.message)
         return true
       }
 
       const isAuthenticated = authService.isAuthenticated()
       const userTipo = authService.getUserTipo()
 
-      console.log('🔐 Status:', {
+      log.auth('Status:', {
         autenticado: isAuthenticated,
         tipo: userTipo,
-        rota: to.path
+        rota: to.path,
       })
 
-      // EVITAR LOOP - se já está na mesma página
-      if (to.path === from.path) {
-        console.log('⚠️ Mesma página, ignorando')
-        return true
-      }
+      // ===== REGRAS DE NAVEGAÇÃO =====
 
-      // ========== REGRAS DE NAVEGAÇÃO ==========
-
-      // Caso 1: Rotas públicas (login, registro, index)
+      // Rotas públicas
       if (to.meta?.publica) {
-        // Se está autenticado e tentando acessar login ou registro
-        if (isAuthenticated && (to.path === '/login' || to.path === '/registro')) {
-          // Se tem tipo definido, vai para rota específica, senão vai para index
+        // Redirecionar usuários autenticados do login/registro
+        if (isAuthenticated && ['/login', '/registro'].includes(to.path)) {
           const destino = userTipo ? `/${userTipo}` : '/'
-          console.log('➡️ Usuário já autenticado, redirecionando para:', destino)
+          log.info(`Usuário autenticado → redirecionando para: ${destino}`)
           return destino
         }
-        // Permite acesso a outras páginas públicas (como index)
-        console.log('✅ Acesso permitido a página pública')
         return true
       }
 
-      // Caso 2: Rota privada (requer autenticação)
+      // Rotas que requerem autenticação
       if (to.meta?.requerAuth && !isAuthenticated) {
-        console.log('➡️ Usuário não autenticado, redirecionando para login')
+        log.info('Usuário não autenticado → login')
         return '/login'
       }
 
-      // Caso 3: Verifica tipo de usuário para rotas específicas
+      // Verificar tipo de usuário
       if (to.meta?.tipo && to.meta.tipo !== userTipo) {
-        console.log(`➡️ Tipo incorreto (requer ${to.meta.tipo}, tem ${userTipo})`)
-        // Redireciona para o dashboard apropriado ou index
+        log.warn(`Tipo incorreto (requer: ${to.meta.tipo}, tem: ${userTipo})`)
         return userTipo ? `/${userTipo}` : '/'
       }
 
-      // Caso 4: Tudo ok, permite acesso
-      console.log('✅ Acesso permitido')
+      log.success('Acesso permitido')
       return true
-
     } catch (error) {
-      console.error('❌ Erro no guard:', error)
+      log.error('Erro no guard:', error)
       return true
     }
   })
 
-  Router.onError((error) => {
-    console.error('❌ Erro de navegação:', error)
-  })
+  // Log apenas em desenvolvimento
+  if (DEBUG) {
+    Router.afterEach((to, from) => {
+      log.success(`${from.path} → ${to.path}`)
+    })
 
-  Router.afterEach((to, from) => {
-    console.log('✅ Navegação completa:', from.path, '→', to.path)
-  })
+    Router.onError((error) => {
+      log.error('Erro de navegação:', error)
+    })
+  }
 
   return Router
 })
